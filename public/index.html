@@ -1,0 +1,1117 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="HSC ICT সহায়ক: বাংলায় ধাপে ধাপে সমাধান, সংখ্যা কনভার্টার, HTML ও প্রোগ্রামিং ল্যাব, MCQ কুইজ ও বিগত সালের প্রশ্ন।">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>HSC ICT সহায়ক</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@600;700;800&family=Hind+Siliguri:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: sticky app bar with scrolling tab pills; one working panel at a time, single column on phones, two columns (input | result) from 900px. */
+:root{
+  --bg:#f3f7f5;          /* green-tinted paper */
+  --surface:#ffffff;
+  --surface-2:#e8f0ec;
+  --ink:#10241c;
+  --ink-2:#4a5f56;
+  --line:#cfdcd5;
+  --brand:#0a6b50;       /* Bangladesh green */
+  --brand-ink:#ffffff;
+  --brand-soft:#d6ece3;
+  --flag:#d83a45;        /* flag red, used sparingly */
+  --ok:#17803d; --ok-soft:#dcf2e4;
+  --bad:#b42333; --bad-soft:#fbe1e4;
+  --code-bg:#0f1f19; --code-ink:#d8f3e6;
+  --f-display:'Baloo Da 2','Hind Siliguri',system-ui,sans-serif;
+  --f-body:'Hind Siliguri','Noto Sans Bengali',system-ui,sans-serif;
+  --f-mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0c1713;--surface:#13221c;--surface-2:#1a2d25;--ink:#e6f2ec;--ink-2:#9db3a9;--line:#2a4237;
+  --brand:#46c99c;--brand-ink:#05231a;--brand-soft:#17382c;--flag:#ff6b76;
+  --ok:#5fd68a;--ok-soft:#173a26;--bad:#ff8590;--bad-soft:#40181d;--code-bg:#08110d;--code-ink:#cdeedd;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0c1713;--surface:#13221c;--surface-2:#1a2d25;--ink:#e6f2ec;--ink-2:#9db3a9;--line:#2a4237;
+  --brand:#46c99c;--brand-ink:#05231a;--brand-soft:#17382c;--flag:#ff6b76;
+  --ok:#5fd68a;--ok-soft:#173a26;--bad:#ff8590;--bad-soft:#40181d;--code-bg:#08110d;--code-ink:#cdeedd;color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.7 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+.wrap{max-width:1080px;margin:0 auto}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+header.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--bg);padding:14px 0 10px;border-bottom:1px solid var(--line);margin-bottom:20px}
+.brand{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.brand h1{font:800 26px/1.2 var(--f-display);margin:0;color:var(--brand);letter-spacing:-.01em}
+.brand h1 b{color:var(--flag);font-weight:800}
+.brand p{margin:0;color:var(--ink-2);font-size:14px}
+nav.tabs{display:flex;gap:8px;margin-top:10px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs button{flex:none}
+button,select,input,textarea{font:inherit;color:inherit}
+.pill{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 16px;cursor:pointer;font-weight:600;font-size:15px;color:var(--ink-2)}
+.pill[aria-selected="true"],.pill.on{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+:focus-visible{outline:3px solid var(--flag);outline-offset:2px}
+h2{font:700 22px/1.3 var(--f-display);margin:0 0 4px;text-wrap:balance}
+h3{font:700 18px/1.4 var(--f-display);margin:18px 0 6px}
+.sub{color:var(--ink-2);margin:0 0 16px;font-size:15px}
+.grid{display:grid;gap:20px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:900px){.grid.two{grid-template-columns:minmax(0,5fr) minmax(0,6fr);align-items:start}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+label.l{display:block;font-weight:600;font-size:14px;margin:12px 0 6px;color:var(--ink-2)}
+textarea,input[type=text],select{width:100%;background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px}
+textarea{min-height:120px;resize:vertical}
+.mono{font-family:var(--f-mono)}
+.btn{background:var(--brand);color:var(--brand-ink);border:0;border-radius:10px;padding:10px 18px;font-weight:700;cursor:pointer;font-size:16px}
+.btn.ghost{background:transparent;color:var(--brand);border:1.5px solid var(--brand)}
+.btn:disabled{opacity:.55;cursor:wait}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.chip{background:var(--brand-soft);color:var(--brand);border:0;border-radius:8px;padding:4px 10px;font-size:14px;cursor:pointer;font-weight:500}
+.hint{font-size:14px;color:var(--ink-2)}
+.ref{display:inline-block;background:var(--surface-2);border-left:4px solid var(--flag);padding:6px 12px;border-radius:0 8px 8px 0;font-size:14px;margin:10px 0;color:var(--ink-2)}
+.answer{background:var(--brand-soft);border:2px solid var(--brand);border-radius:12px;padding:12px 16px;font:600 20px/1.5 var(--f-mono);overflow-wrap:anywhere;color:var(--ink)}
+.step{border-left:3px solid var(--brand);padding:2px 0 2px 14px;margin:14px 0}
+.step .t{font-weight:700;color:var(--brand)}
+.tbl{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;font-size:15px;min-width:260px}
+th,td{border:1px solid var(--line);padding:5px 12px;text-align:center;font-family:var(--f-mono)}
+th{background:var(--surface-2);font-family:var(--f-body)}
+.eq{font-family:var(--f-mono);font-size:15px;overflow-wrap:anywhere;background:var(--bg);border-radius:8px;padding:6px 10px;margin:6px 0}
+.md p{margin:8px 0}.md ul,.md ol{padding-left:22px;margin:8px 0}.md code{font-family:var(--f-mono);background:var(--surface-2);padding:1px 6px;border-radius:5px;font-size:.92em}
+.md pre{background:var(--code-bg);color:var(--code-ink);padding:12px;border-radius:10px;overflow-x:auto;font-family:var(--f-mono);font-size:14px}
+.md h4{font:700 17px var(--f-display);margin:16px 0 4px;color:var(--brand)}
+.err{background:var(--bad-soft);color:var(--bad);padding:10px 14px;border-radius:10px;font-weight:500}
+.thumb{max-height:160px;border-radius:10px;border:1px solid var(--line);margin-top:8px}
+.sec-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+iframe.prev{width:100%;height:340px;border:1.5px solid var(--line);border-radius:10px;background:#fff}
+.code-in{background:var(--code-bg);color:var(--code-ink);font-family:var(--f-mono);font-size:14px;line-height:1.6;min-height:300px;border-color:var(--code-bg)}
+/* quiz */
+.qtop{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.bar-p{height:8px;background:var(--surface-2);border-radius:99px;overflow:hidden}
+.bar-p i{display:block;height:100%;background:var(--brand);transition:width .3s}
+.q{font:600 19px/1.6 var(--f-body);margin:16px 0 12px}
+.opt{display:flex;gap:12px;width:100%;text-align:left;background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:11px 14px;margin:8px 0;cursor:pointer;align-items:flex-start}
+.opt .k{flex:none;width:26px;height:26px;border-radius:50%;background:var(--surface-2);display:grid;place-items:center;font-size:13px;font-weight:700}
+.opt.ok{background:var(--ok-soft);border-color:var(--ok)}.opt.bad{background:var(--bad-soft);border-color:var(--bad)}
+.opt:disabled{cursor:default}
+.expl{background:var(--surface-2);border-radius:10px;padding:10px 14px;margin-top:10px;font-size:15px}
+.score{font:800 56px/1 var(--f-display);color:var(--brand)}
+table.ref-t td,table.ref-t th{font-family:var(--f-body);text-align:left}
+table.ref-t td:first-child{font-family:var(--f-mono);color:var(--brand);font-weight:600;white-space:nowrap}
+.hero{margin-top:14px;border-radius:16px;overflow:hidden;height:clamp(120px,22vw,170px);display:flex;align-items:center;background:linear-gradient(135deg,#0a6b50,#042f23)}
+.hero-t{flex:1 1 0;min-width:0;padding:0 8px 0 20px;color:#fff}
+.hero-t h1{font:800 clamp(24px,5.5vw,36px)/1.15 var(--f-display);margin:0;letter-spacing:-.01em}
+.hero-t h1 b{color:#ff8a93;font-weight:800}
+.hero-t p{margin:6px 0 0;font-size:clamp(12px,2.2vw,15px);line-height:1.5;color:#d5efe5}
+.hero{position:relative}
+.hero-t{position:relative;z-index:1;flex:none;max-width:46%}
+.hero-art{position:absolute;top:0;left:46%;height:100%;width:auto;aspect-ratio:725/180;display:block}
+@media(min-width:900px){.hero-t{max-width:42%}.hero-art{left:auto;right:12px;height:84%;top:8%}}
+header.bar{margin-top:0;padding-top:10px}
+/* chat */
+.chat{max-width:780px;margin:0 auto}
+.chat-head select{flex:1 1 220px}
+.chat-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
+.m{display:flex;gap:10px;margin:16px 0;align-items:flex-start}
+.m.user{justify-content:flex-end}
+.bub{max-width:min(100%,660px);min-width:0;padding:10px 15px;border-radius:18px;overflow-wrap:anywhere}
+.m.user .bub{background:var(--brand);color:var(--brand-ink);border-bottom-right-radius:5px}
+.m.ai .bub{background:var(--surface);border:1px solid var(--line);border-top-left-radius:5px;flex:0 1 auto}
+.m.ai .col{min-width:0;display:flex;flex-direction:column;gap:8px;align-items:flex-start;max-width:100%}
+.av{flex:none;width:34px;height:34px;border-radius:50%;background:var(--brand);color:var(--brand-ink);display:grid;place-items:center;font:800 13px var(--f-display)}
+.dots{display:inline-flex;gap:5px;padding:6px 0}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--ink-2);animation:bl 1.2s infinite}
+.dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
+@keyframes bl{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.composer{position:sticky;bottom:0;background:var(--bg);padding:10px 0 6px;z-index:5}
+.cbox{display:flex;align-items:flex-end;gap:6px;background:var(--surface);border:1.5px solid var(--line);border-radius:26px;padding:6px}
+.cbox:focus-within{border-color:var(--brand)}
+.cbox textarea{border:0;background:transparent;min-height:0;height:44px;max-height:150px;padding:10px 6px;resize:none;flex:1;border-radius:0}
+.cbox textarea:focus{outline:none}
+.icb{width:42px;height:42px;border-radius:50%;border:0;cursor:pointer;display:grid;place-items:center;flex:none}
+.icb.att{background:var(--surface-2);color:var(--ink-2)}
+.icb.snd{background:var(--brand);color:var(--brand-ink)}
+.icb:disabled{opacity:.5;cursor:wait}
+.prevchip{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px 8px;margin-bottom:8px;font-size:14px;color:var(--ink-2)}
+.prevchip img{height:36px;border-radius:6px}
+.prevchip button{border:0;background:transparent;cursor:pointer;color:var(--ink-2)}
+.bub .thumb{display:block;margin:0 0 8px;max-width:100%}
+.sugg{display:flex;gap:8px;flex-wrap:wrap}
+.sugg .chip{text-align:left;padding:6px 12px;font-size:14px}
+/* tab row: scrolling tabs + fixed Start Exam button on the right */
+.tabrow{display:flex;gap:10px;align-items:center;margin-top:10px}
+.tabrow nav.tabs{flex:1 1 auto;min-width:0;margin-top:0}
+.exam{flex:none;border:0;border-radius:999px;padding:7px 18px;font-weight:700;font-size:15px;cursor:pointer;background:var(--flag);color:var(--brand-ink)}
+.exam[aria-selected="true"]{box-shadow:0 0 0 3px var(--brand-soft)}
+.term{background:var(--code-bg);color:var(--code-ink);font-family:var(--f-mono);font-size:15px;padding:12px 14px;border-radius:10px;white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0}
+.term::before{content:"আউটপুট";display:block;font:600 12px var(--f-body);color:#7fcfae;margin-bottom:4px}
+.issue{display:flex;gap:10px;padding:8px 12px;border-radius:10px;margin:8px 0;background:var(--bad-soft);color:var(--ink)}
+.issue.warn{background:var(--surface-2)}
+.issue b{flex:none;color:var(--bad)}
+.issue.warn b{color:var(--brand)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+<div class="hero">
+<div class="hero-t"><h1>HSC <b>ICT</b> সহায়ক</h1><p>একাদশ–দ্বাদশ শ্রেণি · এনসিটিবি পাঠ্যবই অনুসারে</p></div>
+<svg class="hero-art" role="img" aria-label="কম্পিউটার কোড, নেটওয়ার্ক ও ডেটাবেজের চিত্র" viewBox="355 0 725 180" preserveAspectRatio="xMidYMid meet">
+ <circle cx="430" cy="92" r="62" fill="#d83a45"/>
+ <g stroke="#0a6b50" stroke-width="2" fill="#ffffff">
+  <path d="M398 72v50a32 10 0 0 0 64 0V72z"/><ellipse cx="430" cy="72" rx="32" ry="10"/>
+  <path d="M398 90a32 10 0 0 0 64 0M398 106a32 10 0 0 0 64 0" fill="none"/>
+ </g>
+ <rect x="520" y="26" width="210" height="128" rx="10" fill="#0c1a14" stroke="#46c99c" stroke-width="2"/>
+ <circle cx="538" cy="44" r="5" fill="#ff6b76"/><circle cx="556" cy="44" r="5" fill="#f5c451"/><circle cx="574" cy="44" r="5" fill="#46c99c"/>
+ <g font-family="JetBrains Mono,monospace" font-size="16">
+  <text x="538" y="78" fill="#46c99c">&lt;html&gt;</text>
+  <text x="556" y="102" fill="#ffffff">&lt;h1&gt;ICT&lt;/h1&gt;</text>
+  <text x="556" y="126" fill="#f5c451">&lt;p&gt;HSC&lt;/p&gt;</text>
+  <text x="538" y="148" fill="#46c99c">&lt;/html&gt;</text>
+ </g>
+ <g stroke="#ffffff" stroke-width="2" fill="none" opacity=".85">
+  <path d="M800 50L880 92L960 40M880 92L850 146L940 140L880 92M960 40L1010 100L940 140"/>
+ </g>
+ <g fill="#ffffff"><circle cx="800" cy="50" r="9"/><circle cx="880" cy="92" r="12"/><circle cx="960" cy="40" r="9"/><circle cx="850" cy="146" r="9"/><circle cx="940" cy="140" r="9"/><circle cx="1010" cy="100" r="9"/></g>
+ <circle cx="880" cy="92" r="5" fill="#d83a45"/>
+</svg>
+</div>
+<header class="bar">
+  <div class="tabrow">
+  <nav class="tabs" role="tablist" aria-label="বিভাগ">
+    <button class="pill" role="tab" data-tab="solve">AI চ্যাট</button>
+    <button class="pill" role="tab" data-tab="convert">সংখ্যা কনভার্টার</button>
+    <button class="pill" role="tab" data-tab="html">HTML ল্যাব</button>
+    <button class="pill" role="tab" data-tab="prog">প্রোগ্রামিং ল্যাব</button>
+    <button class="pill" role="tab" data-tab="past">বিগত সালের প্রশ্ন</button>
+      </nav>
+  <button class="exam" role="tab" data-tab="quiz" type="button">Start Exam</button>
+  </div>
+</header>
+
+<!-- ============ SOLVE ============ -->
+<section id="p-solve" hidden>
+  <div class="chat">
+    <div class="chat-head">
+      <div><h2 style="margin:0">ICT শিক্ষক</h2><p class="hint" style="margin:0">প্রশ্ন লেখো বা ছবি দাও, বাংলায় বুঝিয়ে দেব</p></div>
+      <div class="row">
+        <select id="c-ch" aria-label="অধ্যায় বেছে নাও" style="width:auto;max-width:100%;min-width:0"></select>
+        <button class="btn ghost" id="c-new" type="button">নতুন চ্যাট</button>
+      </div>
+    </div>
+    <div id="c-msgs" aria-live="polite"></div>
+    <div class="composer">
+      <div id="c-prev" class="prevchip" hidden><img id="c-thumb" alt="আপলোড করা ছবি"><span>ছবি যোগ হয়েছে</span><button type="button" id="c-rm" aria-label="ছবি সরাও">✕</button></div>
+      <div class="cbox">
+        <input type="file" id="c-file" accept="image/*" hidden>
+        <button class="icb att" id="c-att" type="button" aria-label="ছবি যোগ করো"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.5l-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l9-9a3.7 3.7 0 0 1 5.2 5.2l-9 9a1.8 1.8 0 0 1-2.6-2.6l8.4-8.4"/></svg></button>
+        <textarea id="c-in" rows="1" placeholder="তোমার প্রশ্ন লেখো…" aria-label="প্রশ্ন"></textarea>
+        <button class="icb snd" id="c-send" type="button" aria-label="পাঠাও"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONVERT ============ -->
+<section id="p-convert" hidden>
+  <div class="sec-tabs" role="tablist">
+    <button class="pill on" data-ct="c-base">সংখ্যা রূপান্তর</button>
+    <button class="pill" data-ct="c-comp">পরিপূরক ও বিয়োগ</button>
+    <button class="pill" data-ct="c-code">ASCII ও BCD</button>
+  </div>
+
+  <div id="c-base" class="grid two">
+    <div class="card">
+      <h2>সংখ্যা পদ্ধতির রূপান্তর</h2>
+      <p class="sub">ভগ্নাংশসহ সংখ্যাও দেওয়া যায় (যেমন 101.11)। হেক্সাডেসিমালে A–F অক্ষর ব্যবহার করো।</p>
+      <label class="l" for="b-n">সংখ্যা</label>
+      <input type="text" id="b-n" class="mono" value="1011.101" autocomplete="off" inputmode="text" spellcheck="false">
+      <div class="row" style="margin-top:10px">
+        <div style="flex:1;min-width:120px"><label class="l" for="b-from">যে পদ্ধতিতে আছে</label>
+          <select id="b-from"><option value="2">বাইনারি (২)</option><option value="8">অক্টাল (৮)</option><option value="10">ডেসিমাল (১০)</option><option value="16">হেক্সাডেসিমাল (১৬)</option></select></div>
+        <div style="flex:1;min-width:120px"><label class="l" for="b-to">যে পদ্ধতিতে চাই</label>
+          <select id="b-to"><option value="2">বাইনারি (২)</option><option value="8">অক্টাল (৮)</option><option value="10" selected>ডেসিমাল (১০)</option><option value="16">হেক্সাডেসিমাল (১৬)</option></select></div>
+      </div>
+      <div class="chips" id="b-ex"></div>
+      <div class="row" style="margin-top:16px"><button class="btn" id="b-go">রূপান্তর করো</button></div>
+    </div>
+    <div class="card" id="b-out"></div>
+  </div>
+
+  <div id="c-comp" class="grid two" hidden>
+    <div class="card">
+      <h2>১-এর ও ২-এর পরিপূরক</h2>
+      <p class="sub">বাইনারি সংখ্যা দাও।</p>
+      <label class="l" for="k-n">বাইনারি সংখ্যা</label>
+      <input type="text" id="k-n" class="mono" value="01101" autocomplete="off" inputmode="numeric">
+      <div class="row" style="margin-top:12px"><button class="btn" id="k-go">পরিপূরক বের করো</button></div>
+      <h2 style="margin-top:28px">২-এর পরিপূরক পদ্ধতিতে বিয়োগ</h2>
+      <p class="sub">A − B (দুটিই বাইনারি)</p>
+      <div class="row">
+        <div style="flex:1;min-width:120px"><label class="l" for="m-a">A</label><input type="text" id="m-a" class="mono" value="1001" inputmode="numeric"></div>
+        <div style="flex:1;min-width:120px"><label class="l" for="m-b">B</label><input type="text" id="m-b" class="mono" value="0110" inputmode="numeric"></div>
+      </div>
+      <div class="row" style="margin-top:12px"><button class="btn" id="m-go">বিয়োগ করো</button></div>
+    </div>
+    <div class="card" id="k-out"></div>
+  </div>
+
+  <div id="c-code" class="grid two" hidden>
+    <div class="card">
+      <h2>ASCII ও BCD কোড</h2>
+      <p class="sub">অক্ষর লিখলে ASCII কোড, শুধু অঙ্ক লিখলে BCD-ও দেখাবে।</p>
+      <label class="l" for="a-n">লেখা বা সংখ্যা</label>
+      <input type="text" id="a-n" class="mono" value="Bd25" autocomplete="off">
+      <div class="row" style="margin-top:12px"><button class="btn" id="a-go">কোড দেখাও</button></div>
+    </div>
+    <div class="card" id="a-out"></div>
+  </div>
+</section>
+
+<!-- ============ HTML ============ -->
+<section id="p-html" hidden>
+  <div class="grid two">
+    <div class="card">
+      <h2>HTML ল্যাব</h2>
+      <p class="sub">কোড লেখো বা নিচের উদাহরণ বেছে নাও। ডানে সঙ্গে সঙ্গে ফল দেখা যাবে।</p>
+      <div class="chips" id="h-ex" style="margin:0 0 10px"></div>
+      <label class="l" for="h-code">তোমার HTML কোড</label>
+      <textarea id="h-code" class="code-in" spellcheck="false"></textarea>
+    </div>
+    <div>
+      <div class="card">
+        <h2>ফলাফল</h2>
+        <iframe class="prev" id="h-prev" sandbox="" title="HTML ফলাফল"></iframe>
+        <p class="hint" style="margin-bottom:0">এনসিটিবি বই: চতুর্থ অধ্যায় — ওয়েব ডিজাইন পরিচিতি ও HTML</p>
+      </div>
+      <div class="card" style="margin-top:20px">
+        <h2>গুরুত্বপূর্ণ ট্যাগ</h2>
+        <div class="tbl"><table class="ref-t" id="h-ref"></table></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROGRAMMING ============ -->
+<section id="p-prog" hidden>
+  <div class="grid two">
+    <div class="card">
+      <h2>প্রোগ্রামিং ল্যাব</h2>
+      <p class="sub">C ভাষার কোড লেখো বা উদাহরণ বেছে নাও। ত্রুটি খুঁজে নাও, অথবা চালালে কী আউটপুট আসবে তা ব্যাখ্যাসহ দেখে নাও।</p>
+      <div class="chips" id="g-ex" style="margin:0 0 10px"></div>
+      <label class="l" for="g-code">তোমার C কোড</label>
+      <textarea id="g-code" class="code-in" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea>
+      <label class="l" for="g-stdin">ইনপুট (প্রোগ্রাম কিছু চাইলে এখানে লেখো, ঐচ্ছিক)</label>
+      <input type="text" id="g-stdin" class="mono" placeholder="যেমন: 5 7" autocomplete="off">
+      <div class="row" style="margin-top:14px">
+        <button class="btn ghost" id="g-chk" type="button">ত্রুটি খুঁজি</button>
+        <button class="btn" id="g-run" type="button">চালাও ও ব্যাখ্যা দাও</button>
+      </div>
+    </div>
+    <div>
+      <div class="card" aria-live="polite">
+        <h2>ফলাফল</h2>
+        <div id="g-out" class="md"><p class="hint">"ত্রুটি খুঁজি" চাপলে সেমিকোলন, ব্র্যাকেট, & চিহ্ন ইত্যাদি সাধারণ ভুল ধরা হবে। "চালাও" চাপলে আউটপুট ও লাইন ধরে ব্যাখ্যা আসবে। আউটপুটটি এআই হিসাব করে দেয়, আসল কম্পাইলার নয়, তাই পরীক্ষার আগে নিজেও মিলিয়ে নিয়ো।</p></div>
+        <p class="hint" style="margin-bottom:0">এনসিটিবি বই: পঞ্চম অধ্যায় — প্রোগ্রামিং ভাষা</p>
+      </div>
+      <div class="card" style="margin-top:20px">
+        <h2>C ভাষার গুরুত্বপূর্ণ নিয়ম</h2>
+        <div class="tbl"><table class="ref-t" id="g-ref"></table></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PAST PAPERS ============ -->
+<section id="p-past" hidden>
+  <div class="card" style="max-width:860px;margin:0 auto">
+    <h2>বিগত সালের প্রশ্ন</h2>
+    <p class="sub">HSC ICT বহুনির্বাচনি প্রশ্ন, বছর ধরে ধরে। বছর বেছে নিয়ে পরীক্ষা দাও।</p>
+    <div class="chips" id="y-chips" style="margin:0 0 12px"></div>
+    <div class="row" style="margin:12px 0">
+      <button class="btn" id="y-start" type="button">এই বছরের পরীক্ষা দাও</button>
+    </div>
+    
+    <div id="y-list"></div>
+  </div>
+</section>
+
+<!-- ============ QUIZ ============ -->
+<section id="p-quiz" hidden>
+  <div class="card" style="max-width:760px;margin:0 auto">
+    <div class="qtop"><h2 style="margin:0">MCQ কুইজ</h2><span class="hint" id="q-best"></span></div>
+    <div class="chips" id="q-ch" style="margin:6px 0 14px"></div>
+    <div id="q-body"></div>
+  </div>
+</section>
+</div>
+
+<script src="config.js"></script>
+<script>
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const bn=n=>String(n).replace(/\d/g,d=>'০১২৩৪৫৬৭৮৯'[d]);
+const SUPD='⁰¹²³⁴⁵⁶⁷⁸⁹', SUBD='₀₁₂₃₄₅₆₇₈₉';
+const sup=n=>String(n).split('').map(c=>c==='-'?'⁻':SUPD[c]).join('');
+const sub=n=>String(n).split('').map(c=>SUBD[c]).join('');
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const CH=[
+ 'তথ্য ও যোগাযোগ প্রযুক্তি: বিশ্ব ও বাংলাদেশ প্রেক্ষিত',
+ 'কমিউনিকেশন সিস্টেমস ও কম্পিউটার নেটওয়ার্কিং',
+ 'সংখ্যা পদ্ধতি ও ডিজিটাল ডিভাইস',
+ 'ওয়েব ডিজাইন পরিচিতি ও HTML',
+ 'প্রোগ্রামিং ভাষা',
+ 'ডেটাবেজ ম্যানেজমেন্ট সিস্টেম'];
+const CHN=['ICT: বিশ্ব ও বাংলাদেশ','কমিউনিকেশন ও নেটওয়ার্কিং','সংখ্যা পদ্ধতি ও ডিজিটাল ডিভাইস','ওয়েব ডিজাইন ও HTML','প্রোগ্রামিং ভাষা','ডেটাবেজ ম্যানেজমেন্ট সিস্টেম'];
+
+/* ---------- tabs / routing ---------- */
+const TABS=['solve','convert','html','prog','past','quiz'];
+function show(t){
+  if(!TABS.includes(t))t='solve';
+  TABS.forEach(x=>$('#p-'+x).hidden=x!==t);
+  $$('[data-tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));
+  if(location.hash!=='#'+t)history.replaceState(null,'','#'+t);
+}
+$$('[data-tab]').forEach(b=>b.onclick=()=>show(b.dataset.tab));
+addEventListener('hashchange',()=>show(location.hash.slice(1)));
+
+/* ================= NUMBER SYSTEMS ================= */
+const D='0123456789ABCDEF', BITS={2:1,8:3,16:4};
+const NAME={2:'বাইনারি',8:'অক্টাল',10:'ডেসিমাল',16:'হেক্সাডেসিমাল'};
+const SEC='এনসিটিবি বই: তৃতীয় অধ্যায় — সংখ্যা পদ্ধতি ও ডিজিটাল ডিভাইস (সংখ্যা পদ্ধতির রূপান্তর অংশ)';
+function clean(s,b){
+  s=s.trim().toUpperCase().replace(/\s+/g,'');
+  if(!s)return{err:'একটি সংখ্যা লেখো।'};
+  if(!/^[0-9A-F]+(\.[0-9A-F]+)?$/.test(s))return{err:'শুধু অঙ্ক (0–9), অক্ষর A–F এবং একটি দশমিক বিন্দু ব্যবহার করা যাবে।'};
+  for(const ch of s.replace('.','')) if(D.indexOf(ch)>=b)return{err:`"${ch}" অঙ্কটি ${NAME[b]} (ভিত্তি ${b}) পদ্ধতিতে হয় না। এই পদ্ধতিতে অঙ্ক 0 থেকে ${D[b-1]} পর্যন্ত।`};
+  return{s};
+}
+function fracStr(N,b,k){ // exact decimal digits of N / b^k  (b in 2,8,16)
+  const L=BITS[b]*k;
+  return ((N*10n**BigInt(L))/(BigInt(b)**BigInt(k))).toString().padStart(L,'0').replace(/0+$/,'');
+}
+function toDecimal(s,b){
+  const [ip,fp='']=s.split('.');
+  let h='',iv=0n;
+  const terms=[],vals=[];
+  [...ip].forEach((c,i)=>{const p=ip.length-1-i,d=D.indexOf(c);iv+=BigInt(d)*BigInt(b)**BigInt(p);
+    terms.push(`${d}×${b}${sup(p)}`);vals.push(`${(BigInt(d)*BigInt(b)**BigInt(p))}`)});
+  let N=0n;
+  [...fp].forEach((c,i)=>{const d=D.indexOf(c);N=N*BigInt(b)+BigInt(d);
+    terms.push(`${d}×${b}${sup(-(i+1))}`);vals.push(d===0?'0':'0.'+fracStr(BigInt(d),b,i+1))});
+  const fs=fp?fracStr(N,b,fp.length):'';
+  const dec=iv.toString()+(fs?'.'+fs:'');
+  if(b===16&&/[A-F]/.test(s))h+=`<p class="hint">মনে রাখো: A=10, B=11, C=12, D=13, E=14, F=15</p>`;
+  h+=`<div class="step"><div class="t">ধাপ: প্রতিটি অঙ্ককে তার স্থানীয় মান দিয়ে গুণ করি</div>
+   <p>ডান দিক থেকে (দশমিকের আগের অংশে) স্থানের মান হয় ${b}⁰, ${b}¹, ${b}² … আর দশমিকের পরে ${b}⁻¹, ${b}⁻² …</p>
+   <div class="eq">(${esc(s)})${sub(b)} = ${terms.join(' + ')}</div>
+   <div class="eq">= ${vals.join(' + ')}</div>
+   <div class="eq">= ${dec}</div></div>`;
+  return{dec,h};
+}
+function fromDecimal(dec,b){
+  const [ip,fp='']=dec.split('.');
+  let n=BigInt(ip),digs=[],rows='';
+  if(n===0n)digs=['0'];
+  while(n>0n){const q=n/BigInt(b),r=n%BigInt(b);rows+=`<tr><td>${b} ) ${n}</td><td>${q}</td><td>${D[Number(r)]}${r>9n?` (${r})`:''}</td></tr>`;digs.unshift(D[Number(r)]);n=q}
+  let h=`<div class="step"><div class="t">ধাপ ১: পূর্ণ অংশকে ${b} দিয়ে বারবার ভাগ করি</div>
+   <p>ভাগফল 0 না হওয়া পর্যন্ত ভাগ চলবে। ভাগশেষগুলো <b>নিচ থেকে উপরে</b> সাজালে উত্তর পাওয়া যায়।</p>
+   <div class="tbl"><table><tr><th>ভাগ</th><th>ভাগফল</th><th>ভাগশেষ</th></tr>${rows||'<tr><td>0</td><td>0</td><td>0</td></tr>'}</table></div>
+   <div class="eq">(${ip})${sub(10)} = (${digs.join('')})${sub(b)}</div></div>`;
+  let res=digs.join('');
+  if(fp){
+    let F=BigInt(fp),den=10n**BigInt(fp.length),fr='',out='',cnt=0;
+    while(F>0n&&cnt<10){
+      const L=fp.length;
+      const left='0.'+F.toString().padStart(L,'0').replace(/0+$/,'');
+      const prod=F*BigInt(b);
+      const ps=prod.toString().padStart(L+1,'0');
+      const pi=ps.slice(0,ps.length-L), pf=ps.slice(ps.length-L);
+      const dg=D[Number(prod/den)];
+      out+=`<tr><td>${left} × ${b}</td><td>${pi}.${pf}</td><td>${dg}</td></tr>`;fr+=dg;F=prod%den;cnt++;
+    }
+    h+=`<div class="step"><div class="t">ধাপ ২: ভগ্নাংশ অংশকে ${b} দিয়ে বারবার গুণ করি</div>
+     <p>গুণফলের <b>পূর্ণ অংশ</b> লিখে রাখি, ভগ্নাংশ অংশ নিয়ে আবার গুণ করি। ভগ্নাংশ 0 হলে থামি। এখানে পূর্ণ অংশগুলো <b>উপর থেকে নিচে</b> পড়তে হয়।</p>
+     <div class="tbl"><table><tr><th>গুণ</th><th>গুণফল</th><th>পূর্ণ অংশ</th></tr>${out}</table></div>
+     ${F>0n?'<p class="hint">ভগ্নাংশ 0 হলো না, তাই প্রথম '+cnt+' ঘর পর্যন্ত নিয়েছি (প্রায় মান)।</p>':''}
+     <div class="eq">(0.${fp})${sub(10)} ≈ (0.${fr})${sub(b)}</div></div>`;
+    res+='.'+fr;
+  }
+  return{res,h};
+}
+function viaBinary(s,from,to){
+  const g=BITS[from],[ip,fp='']=s.split('.');
+  const bits=c=>D.indexOf(c).toString(2).padStart(g,'0');
+  let h=`<div class="step"><div class="t">ধাপ ১: প্রতিটি ${NAME[from]} অঙ্ককে ${bn(g)} বিটের বাইনারিতে লিখি</div>
+   <div class="eq">${[...s].map(c=>c==='.'?'.':`${c}→${bits(c)}`).join('  ')}</div></div>`;
+  let bi=[...ip].map(bits).join(''),bf=[...fp].map(bits).join('');
+  if(to===2){
+    const r=(bi.replace(/^0+(?=.)/,'')||'0')+(bf.replace(/0+$/,'')?'.'+bf.replace(/0+$/,''):'');
+    return{res:r,h:h+`<p>সবগুলো বিট পরপর বসালেই বাইনারি উত্তর।</p>`};
+  }
+  const t=BITS[to];
+  const pi=bi.padStart(Math.ceil(bi.length/t)*t,'0');
+  const pf=bf.padEnd(Math.ceil(bf.length/t)*t,'0');
+  const gi=pi.match(new RegExp(`.{${t}}`,'g'))||[],gf=pf?pf.match(new RegExp(`.{${t}}`,'g')):[];
+  const di=gi.map(x=>D[parseInt(x,2)]).join(''),df=gf.map(x=>D[parseInt(x,2)]).join('');
+  h+=`<div class="step"><div class="t">ধাপ ২: বিটগুলোকে ডান থেকে ${bn(t)}টি করে ভাগ করি</div>
+   <p>দশমিকের আগের অংশে ডান থেকে, পরের অংশে বাম থেকে ভাগ করতে হয়। কম পড়লে 0 বসিয়ে পূরণ করি।</p>
+   <div class="eq">${gi.join(' ')}${gf.length?' . '+gf.join(' '):''}</div>
+   <div class="eq">${gi.map((x,i)=>`${x}→${di[i]}`).join('  ')}${gf.length?'  .  '+gf.map((x,i)=>`${x}→${df[i]}`).join('  '):''}</div></div>`;
+  const r=(di.replace(/^0+(?=.)/,'')||'0')+(df.replace(/0+$/,'')?'.'+df.replace(/0+$/,''):'');
+  return{res:r,h};
+}
+function convert(){
+  const from=+$('#b-from').value,to=+$('#b-to').value,o=$('#b-out');
+  const c=clean($('#b-n').value,from);
+  if(c.err){o.innerHTML=`<div class="err">${c.err}</div>`;return}
+  let res,h='';
+  if(from===to){res=c.s;h='<p>দুটো পদ্ধতি একই, তাই সংখ্যাটি অপরিবর্তিত থাকবে।</p>'}
+  else if(BITS[from]&&BITS[to]){const r=viaBinary(c.s,from,to);res=r.res;h='<p class="hint">২, ৮ ও ১৬ একই পরিবারের (২-এর ঘাত), তাই সরাসরি বাইনারির মাধ্যমে সহজ নিয়মে রূপান্তর করা যায়।</p>'+r.h}
+  else{
+    let dec=c.s;
+    if(from!==10){const r=toDecimal(c.s,from);dec=r.dec;h+=r.h}
+    if(to!==10){const r=fromDecimal(dec,to);res=r.res;h+=r.h}else res=dec;
+  }
+  o.innerHTML=`<h2>উত্তর</h2><div class="answer">(${esc(c.s)})${sub(from)} = (${esc(res)})${sub(to)}</div>
+   <div class="ref">${SEC}</div><h3>ধাপে ধাপে</h3>${h}`;
+}
+$('#b-go').onclick=convert;
+$('#b-n').addEventListener('keydown',e=>{if(e.key==='Enter')convert()});
+[['1011.101',2,10],['25',10,2],['7A',16,10],['101101',2,8],['255',10,16],['3F',16,2]].forEach(([n,f,t])=>{
+  const b=document.createElement('button');b.className='chip';b.type='button';b.textContent=`(${n})${sub(f)} → ${sub(t).replace(/^/,'')||t} ${NAME[t]}`;
+  b.onclick=()=>{$('#b-n').value=n;$('#b-from').value=f;$('#b-to').value=t;convert()};$('#b-ex').append(b)});
+
+/* complements */
+const padb=(v,n)=>v.toString(2).padStart(n,'0');
+function complement(){
+  const s=$('#k-n').value.trim(),o=$('#k-out');
+  if(!/^[01]+$/.test(s)){o.innerHTML='<div class="err">শুধু 0 ও 1 দিয়ে বাইনারি সংখ্যা লেখো।</div>';return}
+  const n=s.length,one=[...s].map(c=>c==='0'?'1':'0').join('');
+  const two=padb((BigInt(1)<<BigInt(n))-BigInt('0b'+s)&((BigInt(1)<<BigInt(n))-1n),n);
+  const sum=BigInt('0b'+one)+1n,carry=sum>>BigInt(n);
+  o.innerHTML=`<h2>উত্তর</h2>
+   <div class="answer">১-এর পরিপূরক: ${one}<br>২-এর পরিপূরক: ${two}</div>
+   <div class="ref">এনসিটিবি বই: তৃতীয় অধ্যায় — সংখ্যা পদ্ধতি ও ডিজিটাল ডিভাইস (পরিপূরক পদ্ধতি অংশ)</div>
+   <div class="step"><div class="t">ধাপ ১: ১-এর পরিপূরক</div><p>প্রতিটি বিট উল্টে দিই (0 হলে 1, 1 হলে 0)।</p>
+    <div class="eq">${s} → ${one}</div></div>
+   <div class="step"><div class="t">ধাপ ২: ২-এর পরিপূরক</div><p>১-এর পরিপূরকের সঙ্গে 1 যোগ করি।</p>
+    <div class="eq">${one} + 1 = ${two}</div>${carry?'<p class="hint">সবশেষে যে ক্যারি বাড়তি এসেছে তা বাদ যাবে।</p>':''}</div>`;
+}
+function subtract(){
+  const a=$('#m-a').value.trim(),b=$('#m-b').value.trim(),o=$('#k-out');
+  if(!/^[01]+$/.test(a)||!/^[01]+$/.test(b)){o.innerHTML='<div class="err">A ও B দুটোই বাইনারি হতে হবে।</div>';return}
+  const w=Math.max(a.length,b.length),W=BigInt(w),M=1n<<W;
+  const A=BigInt('0b'+a),B=BigInt('0b'+b),pa=padb(A,w),pb=padb(B,w);
+  const comp=M-B,cs=padb(comp&(M-1n),w),sum=A+comp,carry=sum>>W,res=sum&(M-1n);
+  let h=`<div class="step"><div class="t">ধাপ ১: দুটো সংখ্যাকে সমান ${bn(w)} বিটে লিখি</div><div class="eq">A = ${pa}<br>B = ${pb}</div></div>
+   <div class="step"><div class="t">ধাপ ২: B-এর ২-এর পরিপূরক বের করি</div><div class="eq">${pb} → ${cs}</div></div>
+   <div class="step"><div class="t">ধাপ ৩: A-এর সঙ্গে যোগ করি</div><div class="eq">${pa} + ${cs} = ${carry?'1 ':''}${padb(res,w)}</div></div>`;
+  let ans;
+  if(carry){h+=`<div class="step"><div class="t">ধাপ ৪: শেষ ক্যারি এসেছে</div><p>ক্যারি 1 এলে ফল ধনাত্মক। ক্যারি বাদ দিই।</p></div>`;ans=padb(res,w)}
+  else{const mag=M-res;h+=`<div class="step"><div class="t">ধাপ ৪: শেষ ক্যারি আসেনি</div><p>ক্যারি না এলে ফল ঋণাত্মক। যোগফলের ২-এর পরিপূরক নিয়ে সামনে (−) চিহ্ন বসাই।</p><div class="eq">${padb(res,w)} → ${padb(mag&(M-1n),w)}</div></div>`;ans='−'+padb(mag&(M-1n),w)}
+  const dv=A-B;
+  o.innerHTML=`<h2>উত্তর</h2><div class="answer">(${a})${sub(2)} − (${b})${sub(2)} = ${ans}</div>
+   <div class="ref">${SEC.replace('সংখ্যা পদ্ধতির রূপান্তর অংশ','বিয়োগ ও পরিপূরক অংশ')}</div>
+   <p class="hint">মিলিয়ে দেখো: ${A} − ${B} = ${dv} (ডেসিমালে)</p><h3>ধাপে ধাপে</h3>${h}`;
+}
+$('#k-go').onclick=complement;$('#m-go').onclick=subtract;
+
+/* ASCII / BCD */
+function codes(){
+  const t=$('#a-n').value,o=$('#a-out');
+  if(!t){o.innerHTML='<div class="err">কিছু লেখো।</div>';return}
+  const ch=[...t].slice(0,24);
+  let rows=ch.map(c=>{const cp=c.codePointAt(0);return cp<128
+    ?`<tr><td>${esc(c)==' '?'␣':esc(c)}</td><td>${cp}</td><td>${cp.toString(2).padStart(7,'0')}</td><td>${cp.toString(16).toUpperCase()}</td></tr>`
+    :`<tr><td>${esc(c)}</td><td>${cp}</td><td colspan="2">Unicode U+${cp.toString(16).toUpperCase().padStart(4,'0')}</td></tr>`}).join('');
+  let bcd='';
+  if(/^\d+$/.test(t)) bcd=`<h3>BCD (বাইনারি কোডেড ডেসিমাল)</h3><p>প্রতিটি দশমিক অঙ্ককে আলাদা করে ৪ বিটের বাইনারিতে লিখতে হয়।</p>
+   <div class="eq">${[...t].map(d=>`${d}→${(+d).toString(2).padStart(4,'0')}`).join('  ')}</div>
+   <div class="answer">(${t})${sub(10)} = (${[...t].map(d=>(+d).toString(2).padStart(4,'0')).join(' ')})<small>BCD</small></div>`;
+  o.innerHTML=`<h2>ASCII কোড</h2><p class="sub">ASCII ৭ বিটের কোড, তাই ১২৮টি অক্ষর (0–127) চিহ্নিত করা যায়।</p>
+   <div class="tbl"><table><tr><th>অক্ষর</th><th>দশমিক</th><th>৭ বিট</th><th>হেক্স</th></tr>${rows}</table></div>${bcd}
+   <div class="ref">এনসিটিবি বই: তৃতীয় অধ্যায় — কোড (BCD, ASCII, Unicode) অংশ</div>`;
+}
+$('#a-go').onclick=codes;
+$$('[data-ct]').forEach(b=>b.onclick=()=>{
+  $$('[data-ct]').forEach(x=>x.classList.toggle('on',x===b));
+  ['c-base','c-comp','c-code'].forEach(id=>$('#'+id).hidden=id!==b.dataset.ct);
+});
+
+/* ================= HTML LAB ================= */
+const SNIP={
+ 'হেডিং ও অনুচ্ছেদ':'<h1>আমার স্কুল</h1>\n<h2>ঢাকা কলেজ</h2>\n<p>এটি একটি <b>অনুচ্ছেদ</b>। এখানে <i>বাঁকা</i> ও <u>দাগ দেওয়া</u> লেখাও আছে।</p>',
+ 'লিংক':'<p>আরও জানতে <a href="https://www.nctb.gov.bd">এনসিটিবি</a> দেখো।</p>',
+ 'তালিকা':'<h3>সংখ্যা পদ্ধতি</h3>\n<ul>\n  <li>বাইনারি</li>\n  <li>অক্টাল</li>\n  <li>হেক্সাডেসিমাল</li>\n</ul>\n<ol>\n  <li>প্রথম</li>\n  <li>দ্বিতীয়</li>\n</ol>',
+ 'টেবিল':'<table border="1" cellpadding="6">\n  <tr><th>রোল</th><th>নাম</th><th>নম্বর</th></tr>\n  <tr><td>১</td><td>রহিম</td><td>৮৫</td></tr>\n  <tr><td>২</td><td>করিম</td><td>৯০</td></tr>\n</table>',
+ 'ফর্ম':'<form>\n  <label>নাম: <input type="text" name="n"></label><br><br>\n  <label>পাসওয়ার্ড: <input type="password" name="p"></label><br><br>\n  <input type="radio" name="g"> ছাত্র\n  <input type="radio" name="g"> ছাত্রী<br><br>\n  <input type="submit" value="জমা দিন">\n</form>'
+};
+Object.keys(SNIP).forEach(k=>{const b=document.createElement('button');b.className='chip';b.type='button';b.textContent=k;
+  b.onclick=()=>{$('#h-code').value=SNIP[k];renderHtml()};$('#h-ex').append(b)});
+$('#h-code').value=SNIP['হেডিং ও অনুচ্ছেদ'];
+function renderHtml(){$('#h-prev').srcdoc='<meta charset="utf-8"><body style="font-family:sans-serif;padding:8px;color:#111">'+$('#h-code').value}
+let ht;$('#h-code').oninput=()=>{clearTimeout(ht);ht=setTimeout(renderHtml,200)};
+const TAGS=[['<html>','পুরো HTML ডকুমেন্টের মূল ট্যাগ'],['<head>','ডকুমেন্টের তথ্য (title, meta) রাখার অংশ'],['<title>','ব্রাউজারের ট্যাবে শিরোনাম দেখায়'],['<body>','পেজের যা কিছু দেখা যায় তা এখানে'],
+ ['<h1>–<h6>','হেডিং। h1 সবচেয়ে বড়, h6 সবচেয়ে ছোট'],['<p>','অনুচ্ছেদ'],['<br>','লাইন ভাঙে (ক্লোজিং ট্যাগ নেই)'],['<hr>','আড়াআড়ি দাগ'],
+ ['<b> <i> <u>','বোল্ড, ইটালিক, আন্ডারলাইন'],['<a href="">','হাইপারলিংক তৈরি'],['<img src="" alt="">','ছবি যোগ (ক্লোজিং ট্যাগ নেই)'],
+ ['<ul> <ol> <li>','অ্যানর্ডার্ড / অর্ডার্ড তালিকা ও তার আইটেম'],['<table> <tr> <th> <td>','টেবিল, সারি, হেডার ঘর, ডেটা ঘর'],['<form> <input>','ফর্ম ও ইনপুট ঘর'],['<marquee>','লেখা চলমান (পুরনো ট্যাগ, বইয়ে আছে)']];
+$('#h-ref').innerHTML='<tr><th>ট্যাগ</th><th>কাজ</th></tr>'+TAGS.map(([a,b])=>`<tr><td>${esc(a)}</td><td>${b}</td></tr>`).join('');
+renderHtml();
+
+/* ================= QUIZ ================= */
+const Q=[
+ [1,'ICT-এর পূর্ণরূপ কোনটি?',['Information and Communication Technology','International Computer Technology','Internet and Computer Tools','Information and Computer Teaching'],0,'ICT = Information and Communication Technology, বাংলায় তথ্য ও যোগাযোগ প্রযুক্তি।'],
+ [1,'"বিশ্বগ্রাম" (Global Village) ধারণাটি কে দিয়েছেন?',['বিল গেটস','মার্শাল ম্যাকলুহান','টিম বার্নার্স-লি','চার্লস ব্যাবেজ'],1,'কানাডীয় দার্শনিক মার্শাল ম্যাকলুহান যোগাযোগ প্রযুক্তির কারণে পৃথিবী ছোট হয়ে আসার কথা বোঝাতে "গ্লোবাল ভিলেজ" ধারণা দেন।'],
+ [1,'কৃত্রিমভাবে তৈরি ত্রিমাত্রিক পরিবেশে ব্যবহারকারী বাস্তবের মতো অনুভব করে, একে কী বলে?',['ভার্চুয়াল রিয়েলিটি','ক্রায়োসার্জারি','টেলিমেডিসিন','ই-কমার্স'],0,'ভার্চুয়াল রিয়েলিটি কম্পিউটারে তৈরি পরিবেশে বাস্তব অভিজ্ঞতা দেয়।'],
+ [1,'আঙুলের ছাপ, রেটিনা বা কণ্ঠস্বর দিয়ে মানুষ শনাক্ত করার প্রযুক্তি কোনটি?',['বায়োমেট্রিক্স','ন্যানোটেকনোলজি','রোবটিক্স','জেনেটিক ইঞ্জিনিয়ারিং'],0,'মানুষের শারীরিক বৈশিষ্ট্য ব্যবহার করে শনাক্তকরণই বায়োমেট্রিক্স।'],
+ [1,'এক ন্যানোমিটার কত মিটারের সমান?',['10⁻³ মিটার','10⁻⁶ মিটার','10⁻⁹ মিটার','10⁻¹² মিটার'],2,'1 nm = 10⁻⁹ m। ন্যানোটেকনোলজিতে সাধারণত ১–১০০ ন্যানোমিটার আকারের বস্তু নিয়ে কাজ হয়।'],
+
+ [2,'ডেটা শুধু একদিকে যায়, উল্টো দিকে যায় না। এই পদ্ধতির নাম কী?',['সিমপ্লেক্স','হাফ ডুপ্লেক্স','ফুল ডুপ্লেক্স','মাল্টিপ্লেক্স'],0,'সিমপ্লেক্সে একমুখী ডেটা চলে। যেমন রেডিও, টিভি সম্প্রচার।'],
+ [2,'একই সময়ে দুই দিকে ডেটা আদান-প্রদান করা যায় কোন পদ্ধতিতে?',['সিমপ্লেক্স','হাফ ডুপ্লেক্স','ফুল ডুপ্লেক্স','সিরিয়াল'],2,'ফুল ডুপ্লেক্সে দুই পক্ষ একই সময়ে পাঠাতে ও গ্রহণ করতে পারে। যেমন মোবাইল ফোন।'],
+ [2,'নিচের কোন মাধ্যমে ডেটা সবচেয়ে দ্রুত যায়?',['টুইস্টেড পেয়ার ক্যাবল','কো-অ্যাক্সিয়াল ক্যাবল','অপটিক্যাল ফাইবার','মাইক্রোওয়েভ'],2,'অপটিক্যাল ফাইবারে আলোর সংকেত চলে, তাই গতি বেশি ও ক্ষতি কম।'],
+ [2,'IPv4 ঠিকানা কত বিটের?',['16 বিট','32 বিট','64 বিট','128 বিট'],1,'IPv4 হলো 32 বিটের, আর IPv6 হলো 128 বিটের ঠিকানা।'],
+ [2,'সব কম্পিউটার একটি কেন্দ্রীয় হাব বা সুইচের সঙ্গে যুক্ত থাকে, এটি কোন টপোলজি?',['বাস','স্টার','রিং','মেশ'],1,'স্টার টপোলজিতে কেন্দ্রীয় ডিভাইসের সঙ্গে প্রতিটি নোড আলাদা সংযোগে থাকে।'],
+
+ [3,'(1010)₂ এর ডেসিমাল মান কত?',['8','10','12','14'],1,'1×2³ + 0×2² + 1×2¹ + 0×2⁰ = 8 + 0 + 2 + 0 = 10।'],
+ [3,'(25)₁₀ এর বাইনারি মান কোনটি?',['10011','11001','11010','10101'],1,'25÷2=12 শেষ 1; 12÷2=6 শেষ 0; 6÷2=3 শেষ 0; 3÷2=1 শেষ 1; 1÷2=0 শেষ 1। নিচ থেকে উপরে: 11001।'],
+ [3,'(7A)₁₆ এর ডেসিমাল মান কত?',['112','120','122','126'],2,'7×16 + A×1 = 112 + 10 = 122 (A = 10)।'],
+ [3,'(101101)₂ কে অক্টালে রূপান্তর করলে হয়-',['(45)₈','(55)₈','(65)₈','(35)₈'],1,'ডান থেকে ৩ বিট করে ভাগ: 101 | 101 → 5 | 5 = 55।'],
+ [3,'(0101)₂ এর ২-এর পরিপূরক কোনটি?',['1010','1011','0110','1001'],1,'১-এর পরিপূরক = 1010। এর সঙ্গে 1 যোগ করলে 1011।'],
+
+ [4,'HTML-এর পূর্ণরূপ কী?',['Hyper Text Markup Language','High Text Machine Language','Hyper Tool Markup Language','Home Text Making Language'],0,'HTML = HyperText Markup Language, ওয়েব পেজ তৈরির মার্কআপ ভাষা।'],
+ [4,'সবচেয়ে বড় আকারের হেডিং তৈরি হয় কোন ট্যাগে?',['<h6>','<head>','<h1>','<big>'],2,'<h1> থেকে <h6> পর্যন্ত হেডিং ট্যাগ। <h1> সবচেয়ে বড়।'],
+ [4,'হাইপারলিংক তৈরির ট্যাগ কোনটি?',['<link>','<a>','<href>','<url>'],1,'<a href="ঠিকানা">লেখা</a> দিয়ে লিংক তৈরি হয়।'],
+ [4,'ওয়েব পেজে ছবি যোগ করতে কোন ট্যাগ লাগে?',['<image>','<pic>','<img>','<src>'],2,'<img src="ছবির ঠিকানা" alt="বর্ণনা"> ব্যবহার করা হয়। src হলো attribute।'],
+ [4,'HTML টেবিলে একটি সারি (row) তৈরির ট্যাগ কোনটি?',['<td>','<th>','<tr>','<tb>'],2,'<tr> = table row, <td> = table data, <th> = table heading।'],
+
+ [5,'C প্রোগ্রামের কার্যকর হওয়া শুরু হয় কোন ফাংশন থেকে?',['start()','main()','begin()','run()'],1,'প্রতিটি C প্রোগ্রামে main() ফাংশন থাকে এবং সেখান থেকেই নির্বাহ শুরু হয়।'],
+ [5,'C ভাষায় কিবোর্ড থেকে ইনপুট নেওয়ার ফাংশন কোনটি?',['printf()','scanf()','input()','get()'],1,'scanf() ইনপুট নেয়, printf() আউটপুট দেখায়।'],
+ [5,'C ভাষার একটি স্টেটমেন্ট শেষ হয় কী দিয়ে?',['. (ডট)',', (কমা)','; (সেমিকোলন)',': (কোলন)'],2,'প্রতিটি স্টেটমেন্টের শেষে সেমিকোলন (;) দিতে হয়।'],
+ [5,'উচ্চস্তরের ভাষার প্রোগ্রামকে একসঙ্গে পুরোটা মেশিন ভাষায় অনুবাদ করে কোনটি?',['কম্পাইলার','অ্যাসেম্বলার','ইন্টারপ্রেটার','লিংকার'],0,'কম্পাইলার পুরো সোর্স কোড একবারে অনুবাদ করে। ইন্টারপ্রেটার লাইন ধরে ধরে অনুবাদ করে।'],
+ [5,'C ভাষায় পূর্ণসংখ্যা printf-এ ছাপার ফরম্যাট স্পেসিফায়ার কোনটি?',['%f','%c','%d','%s'],2,'%d পূর্ণসংখ্যা, %f দশমিক সংখ্যা, %c একটি অক্ষর, %s স্ট্রিং।'],
+
+ [6,'DBMS-এর পূর্ণরূপ কোনটি?',['Data Base Management System','Digital Base Memory System','Data Binary Management Set','Direct Base Management Service'],0,'DBMS = Database Management System, ডেটাবেজ ম্যানেজমেন্ট সিস্টেম।'],
+ [6,'ডেটাবেজ টেবিলের একটি সারিকে কী বলে?',['ফিল্ড','রেকর্ড','কি','অ্যাট্রিবিউট'],1,'সারি = রেকর্ড (টাপল)। কলাম = ফিল্ড (অ্যাট্রিবিউট)।'],
+ [6,'প্রাইমারি কি (Primary Key)-এর বৈশিষ্ট্য কোনটি?',['মান খালি থাকতে পারে','মান ইউনিক হতে হয়','একাধিক রেকর্ডে একই মান থাকে','শুধু টেক্সট হয়'],1,'প্রাইমারি কি-এর মান ইউনিক হয় এবং খালি (NULL) থাকে না।'],
+ [6,'SQL-এর পূর্ণরূপ কী?',['Simple Query Language','Structured Query Language','Standard Question Language','System Query Logic'],1,'SQL = Structured Query Language, ডেটাবেজ থেকে তথ্য নিতে ও পরিবর্তন করতে ব্যবহৃত হয়।'],
+ [6,'টেবিলের একটি কলামকে কী বলা হয়?',['রেকর্ড','টাপল','ফিল্ড','ফাইল'],2,'কলাম হলো ফিল্ড বা অ্যাট্রিবিউট, যেমন Name, Roll।']
+];
+/* extra questions: [question, correct, wrong1, wrong2, wrong3, explanation] ; correct answer is shuffled at runtime */
+const mk=(ch,rows)=>rows.map(r=>[ch,r[0],[r[1],r[2],r[3],r[4]],0,r[5]]);
+Q.push(
+...mk(1,[
+['ভার্চুয়াল রিয়েলিটির অভিজ্ঞতা পেতে মাথায় পরার বিশেষ ডিভাইসের নাম কী?','হেড মাউন্টেড ডিসপ্লে','স্ক্যানার','লাইট পেন','ট্র্যাকবল','হেড মাউন্টেড ডিসপ্লে (HMD) চোখের সামনে ত্রিমাত্রিক দৃশ্য দেখায়।'],
+['রোবটিক্সের তিনটি সূত্র কে দিয়েছেন?','আইজ্যাক আসিমভ','জন ম্যাকার্থি','জোহান গুটেনবার্গ','চার্লস ব্যাবেজ','লেখক আইজ্যাক আসিমভ রোবটের আচরণের তিনটি সূত্র দিয়েছেন।'],
+['"আর্টিফিশিয়াল ইন্টেলিজেন্স" শব্দটি প্রথম ব্যবহার করেন কে?','জন ম্যাকার্থি','বিল গেটস','মার্শাল ম্যাকলুহান','ড্যানিয়েল বেল','জন ম্যাকার্থি ১৯৫৬ সালে এই শব্দটি ব্যবহার করেন।'],
+['বিটি বেগুন উদ্ভাবনে কোন প্রযুক্তি ব্যবহৃত হয়েছে?','জেনেটিক ইঞ্জিনিয়ারিং','ক্রায়োসার্জারি','ন্যানোটেকনোলজি','রোবটিক্স','জিনের পরিবর্তন ঘটিয়ে নতুন বৈশিষ্ট্যের উদ্ভিদ বা প্রাণী তৈরি জেনেটিক ইঞ্জিনিয়ারিংয়ের কাজ।'],
+['ক্রায়োজেনিক্স কীসের সঙ্গে সম্পর্কিত?','অতি নিম্ন তাপমাত্রা','অতি উচ্চ চাপ','অতি উচ্চ গতি','অতি ক্ষুদ্র আকার','ক্রায়োজেনিক্স অতি নিম্ন তাপমাত্রা নিয়ে কাজ করে।'],
+['জীববিজ্ঞানের তথ্য কম্পিউটার দিয়ে বিশ্লেষণ করার বিজ্ঞানকে কী বলে?','বায়োইনফরমেটিক্স','রোবটিক্স','ক্রায়োজেনিক্স','টেলিমেডিসিন','বায়োইনফরমেটিক্সে ডিএনএ, প্রোটিন ইত্যাদির তথ্য কম্পিউটারে বিশ্লেষণ করা হয়।'],
+['ই-গভর্নেন্সের একটি প্রধান সুবিধা কোনটি?','সরকারি কাজে স্বচ্ছতা ও জবাবদিহি বাড়ে','কাগজের ব্যবহার বাড়ে','সেবা পেতে সময় বেশি লাগে','নাগরিককে অফিসে যেতে হয়','ই-গভর্নেন্সে সেবা সহজ, দ্রুত ও স্বচ্ছ হয়।'],
+['টেলিমেডিসিন কী?','দূর থেকে ইলেকট্রনিক মাধ্যমে চিকিৎসাসেবা','ওষুধের অনলাইন বিক্রি','কম্পিউটারে রোগের ছবি আঁকা','হাসপাতালের ভবন নির্মাণ','টেলিমেডিসিনে রোগী ও চিকিৎসক দূরে থেকেও যোগাযোগ করতে পারেন।'],
+['বঙ্গবন্ধু স্যাটেলাইট-১ কত সালে উৎক্ষেপণ করা হয়?','২০১৮','২০১৬','২০১৭','২০১৯','২০১৮ সালের ১২ মে বঙ্গবন্ধু স্যাটেলাইট-১ উৎক্ষেপণ করা হয়।'],
+['বাংলাদেশ প্রথম কোন সাবমেরিন ক্যাবলের সঙ্গে যুক্ত হয়?','SEA-ME-WE-4','SEA-ME-WE-5','TAT-14','FLAG','বাংলাদেশ ২০০৬ সালে SEA-ME-WE-4 এর সঙ্গে যুক্ত হয়।'],
+['বাংলাদেশে তথ্য অধিকার আইন পাস হয় কত সালে?','২০০৯','২০০৫','২০০৭','২০১১','তথ্য অধিকার আইন ২০০৯ সালে পাস হয়।'],
+['ডিজিটাল ডিভাইড বলতে কী বোঝায়?','প্রযুক্তি ব্যবহারে সক্ষম ও অক্ষম মানুষের ব্যবধান','কম্পিউটারের দুটি ভাগ','ডেটার দুই ধরনের কোড','নেটওয়ার্কের দুটি অংশ','যাদের প্রযুক্তি সুবিধা আছে আর যাদের নেই, তাদের মধ্যে ফারাককে ডিজিটাল ডিভাইড বলে।'],
+['B2B ই-কমার্স কী?','ব্যবসায়ী থেকে ব্যবসায়ীর মধ্যে লেনদেন','ক্রেতা থেকে ক্রেতার মধ্যে লেনদেন','সরকার থেকে নাগরিকের লেনদেন','ব্যবসায়ী থেকে ক্রেতার লেনদেন','B2B = Business to Business।'],
+['নিচের কোনটি বায়োমেট্রিক্স পদ্ধতি নয়?','পাসওয়ার্ড','আঙুলের ছাপ','আইরিস স্ক্যান','কণ্ঠস্বর শনাক্তকরণ','বায়োমেট্রিক্সে শরীরের বৈশিষ্ট্য ব্যবহার হয়। পাসওয়ার্ড মনে রাখা তথ্য, শারীরিক বৈশিষ্ট্য নয়।'],
+['বিশেষজ্ঞের মতো সিদ্ধান্ত নিতে পারে এমন কম্পিউটার সিস্টেমকে কী বলে?','এক্সপার্ট সিস্টেম','ডেটাবেজ সিস্টেম','অপারেটিং সিস্টেম','নেটওয়ার্ক সিস্টেম','এক্সপার্ট সিস্টেম কৃত্রিম বুদ্ধিমত্তার একটি প্রয়োগ।'],
+['ইন্টারনেটের মাধ্যমে শিক্ষা গ্রহণকে কী বলে?','ই-লার্নিং','ই-কমার্স','ই-মেইল','ই-গভর্নেন্স','ই-লার্নিং = ইলেকট্রনিক লার্নিং।'],
+['অনুমতি ছাড়া অন্যের কম্পিউটার সিস্টেমে প্রবেশ করাকে কী বলে?','হ্যাকিং','ব্রাউজিং','কম্পাইলিং','ফরম্যাটিং','অনুমতি ছাড়া ঢুকে পড়া হ্যাকিং, এটি সাইবার অপরাধ।'],
+['প্রথম ছাপাখানার আবিষ্কারক কে?','জোহান গুটেনবার্গ','চার্লস ব্যাবেজ','টিম বার্নার্স-লি','আইজ্যাক নিউটন','জোহান গুটেনবার্গ ছাপাখানা আবিষ্কার করে তথ্য ছড়িয়ে দেওয়ার পথ খুলে দেন।'],
+['ঘরে বসে ইন্টারনেটে কাজ করে আয় করাকে সাধারণত কী বলে?','ফ্রিল্যান্সিং','ক্রায়োসার্জারি','হ্যাকিং','স্ক্যানিং','ফ্রিল্যান্সাররা স্বাধীনভাবে অনলাইনে কাজ করে আয় করেন।'],
+['১ ন্যানোমিটার কত মাইক্রোমিটারের সমান?','10⁻³','10⁻⁶','10⁻⁹','10³','1 nm = 10⁻⁹ m এবং 1 µm = 10⁻⁶ m, তাই 1 nm = 10⁻³ µm।'],
+['বিমানচালকদের প্রশিক্ষণের জন্য ফ্লাইট সিমুলেটরে কোন প্রযুক্তি কাজে লাগে?','ভার্চুয়াল রিয়েলিটি','বায়োমেট্রিক্স','ক্রায়োজেনিক্স','জেনেটিক ইঞ্জিনিয়ারিং','কৃত্রিম পরিবেশে বাস্তবের মতো অভিজ্ঞতা দেয় ভার্চুয়াল রিয়েলিটি।'],
+['কারখানায় বিপজ্জনক ও একঘেয়ে কাজ করাতে কোন প্রযুক্তি বেশি ব্যবহৃত হয়?','রোবটিক্স','বায়োইনফরমেটিক্স','টেলিমেডিসিন','ই-লার্নিং','রোবট মানুষের বদলে ঝুঁকিপূর্ণ ও পুনরাবৃত্ত কাজ করে।'],
+['ই-কমার্সের একটি সুবিধা কোনটি?','সময় ও খরচ সাশ্রয়','কেনাকাটায় দোকানে যেতে হয়','শুধু দিনের বেলা কেনা যায়','পণ্যের তথ্য পাওয়া যায় না','ঘরে বসে যেকোনো সময় কেনাকাটা করা যায়।'],
+['"বিশ্বগ্রাম" ধারণার মূল কারণ কী?','যোগাযোগ প্রযুক্তির উন্নতি','জনসংখ্যা বৃদ্ধি','কৃষির উন্নয়ন','শিল্পায়ন','যোগাযোগ প্রযুক্তি পৃথিবীকে একটি গ্রামের মতো কাছাকাছি এনেছে।'],
+['স্বয়ংচালিত গাড়ি কোন প্রযুক্তির প্রয়োগ?','কৃত্রিম বুদ্ধিমত্তা','ক্রায়োজেনিক্স','বায়োমেট্রিক্স','টেলিমেডিসিন','স্বয়ংচালিত গাড়ি নিজে সিদ্ধান্ত নেয়, এটি AI-এর প্রয়োগ।']
+]),
+...mk(2,[
+['ডেটা ট্রান্সমিশনের গতি মাপার একক কোনটি?','bps','Hz','dB','pixel','bps (bits per second) = প্রতি সেকেন্ডে কত বিট যায়।'],
+['১ কিলোবিট প্রতি সেকেন্ড (1 Kbps) কত bps?','1000','100','1024000','10','1 Kbps = 1000 bps।'],
+['ওয়াকিটকিতে একজন কথা বললে অন্যজন শোনে, তারপর পালা বদল হয়। এটি কোন পদ্ধতি?','হাফ ডুপ্লেক্স','সিমপ্লেক্স','ফুল ডুপ্লেক্স','প্যারালাল','দুই দিকে ডেটা যায় কিন্তু একই সময়ে নয়, এটি হাফ ডুপ্লেক্স।'],
+['টিভি সম্প্রচার কোন ধরনের ডেটা ট্রান্সমিশন?','সিমপ্লেক্স','হাফ ডুপ্লেক্স','ফুল ডুপ্লেক্স','মাল্টিপ্লেক্স','টিভি কেন্দ্র থেকে শুধু দর্শকের দিকে ডেটা যায়, তাই সিমপ্লেক্স।'],
+['কোন ক্যাবলে ইলেকট্রোম্যাগনেটিক ইন্টারফেরেন্স হয় না?','অপটিক্যাল ফাইবার','টুইস্টেড পেয়ার','কো-অ্যাক্সিয়াল','টেলিফোন তার','অপটিক্যাল ফাইবারে আলোর সংকেত চলে, তাই বৈদ্যুতিক বিঘ্ন ঘটে না।'],
+['টুইস্টেড পেয়ার ক্যাবলের প্রান্তে কোন কানেক্টর লাগানো হয়?','RJ-45','USB','HDMI','VGA','LAN ক্যাবলে RJ-45 কানেক্টর ব্যবহার করা হয়।'],
+['হাব কীভাবে ডেটা পাঠায়?','সব পোর্টে একসঙ্গে','শুধু নির্দিষ্ট পোর্টে','শুধু রাউটারে','শুধু প্রথম পোর্টে','হাব বুদ্ধিমান নয়, ডেটা সব পোর্টে ছড়িয়ে দেয়।'],
+['কোন ডিভাইস MAC অ্যাড্রেস দেখে নির্দিষ্ট পোর্টে ডেটা পাঠায়?','সুইচ','হাব','রিপিটার','মডেম','সুইচ গন্তব্যের MAC অ্যাড্রেস চিনে সঠিক পোর্টে ডেটা পাঠায়।'],
+['বিভিন্ন নেটওয়ার্ককে যুক্ত করে এবং সেরা পথ বেছে নেয় কোন ডিভাইস?','রাউটার','হাব','রিপিটার','মডেম','রাউটার আইপি ঠিকানা দেখে পথ নির্ধারণ করে।'],
+['মডেম কী কাজ করে?','ডিজিটাল ও অ্যানালগ সংকেত রূপান্তর','নেটওয়ার্কের পথ ঠিক করা','সংকেত শক্তিশালী করা','ডেটা জমা রাখা','Modulator + Demodulator = Modem।'],
+['রিপিটারের কাজ কী?','দুর্বল সংকেতকে শক্তিশালী করা','নেটওয়ার্ক ভাগ করা','ডোমেইন নাম বদলানো','ডেটা সংকুচিত করা','রিপিটার সংকেত পুনরুৎপাদন করে দূরত্ব বাড়ায়।'],
+['LAN-এর পূর্ণরূপ কী?','Local Area Network','Large Area Network','Long Access Network','Linked Area Node','LAN = Local Area Network, ছোট এলাকার নেটওয়ার্ক।'],
+['ইন্টারনেট কোন ধরনের নেটওয়ার্ক?','WAN','LAN','PAN','কোনোটিই নয়','ইন্টারনেট সারা বিশ্বের নেটওয়ার্কের সমষ্টি, তাই WAN-এর বৃহত্তম উদাহরণ।'],
+['একটি মূল ক্যাবলে সব কম্পিউটার যুক্ত থাকে কোন টপোলজিতে?','বাস টপোলজি','স্টার টপোলজি','রিং টপোলজি','মেশ টপোলজি','বাস টপোলজিতে একটি কেন্দ্রীয় ক্যাবল (ব্যাকবোন) থাকে।'],
+['টোকেন পাসিং পদ্ধতি কোন টপোলজিতে দেখা যায়?','রিং টপোলজি','বাস টপোলজি','স্টার টপোলজি','ট্রি টপোলজি','রিং টপোলজিতে টোকেন ঘুরে ঘুরে ডেটা পাঠানোর অনুমতি দেয়।'],
+['মেশ টপোলজিতে n সংখ্যক নোড থাকলে মোট সংযোগ সংখ্যা কত?','n(n−1)/2','n²','2n','n+1','প্রতিটি নোড অন্য সবার সঙ্গে যুক্ত থাকলে সংযোগ হয় n(n−1)/2টি।'],
+['IPv6 ঠিকানা কত বিটের?','128','32','64','256','IPv6 হলো 128 বিটের।'],
+['ওয়েব পেজ স্থানান্তরের জন্য কোন প্রোটোকল ব্যবহার হয়?','HTTP','FTP','SMTP','POP3','HTTP = HyperText Transfer Protocol।'],
+['ইমেইল পাঠানোর প্রোটোকল কোনটি?','SMTP','HTTP','FTP','DNS','SMTP = Simple Mail Transfer Protocol।'],
+['ফাইল আদান-প্রদানের প্রোটোকল কোনটি?','FTP','SMTP','HTTP','IP','FTP = File Transfer Protocol।'],
+['DNS কী কাজ করে?','ডোমেইন নামকে আইপি ঠিকানায় রূপান্তর করে','ইমেইল পাঠায়','ভাইরাস ঠেকায়','ওয়েব পেজ ডিজাইন করে','DNS মানুষের পড়ার উপযোগী নামকে আইপি ঠিকানায় বদলে দেয়।'],
+['Wi-Fi কোন IEEE মানের ওপর ভিত্তি করে তৈরি?','802.11','802.3','802.15','802.16','ওয়্যারলেস LAN এর মান IEEE 802.11।'],
+['GSM-এর পূর্ণরূপ কোনটি?','Global System for Mobile Communication','General System for Mobile Control','Global Signal for Mobile Computer','Generic Service of Mobile Communication','GSM মোবাইল যোগাযোগের একটি বহুল ব্যবহৃত মান।'],
+['ফায়ারওয়ালের কাজ কী?','অননুমোদিত প্রবেশ ঠেকানো','ডেটা সংকুচিত করা','ইমেইল পাঠানো','ওয়েব পেজ ডিজাইন করা','ফায়ারওয়াল নেটওয়ার্কে আসা-যাওয়া ডেটা পরীক্ষা করে নিরাপত্তা দেয়।'],
+['ইন্টারনেটের মাধ্যমে স্টোরেজ ও সফটওয়্যারের মতো সেবা পাওয়াকে কী বলে?','ক্লাউড কম্পিউটিং','ক্রায়োজেনিক্স','ভার্চুয়াল রিয়েলিটি','বায়োমেট্রিক্স','ক্লাউড কম্পিউটিংয়ে ডেটা ও সেবা দূরের সার্ভারে থাকে, ইন্টারনেটে ব্যবহার করা যায়।']
+]),
+...mk(3,[
+['(1111)₂ এর ডেসিমাল মান কত?','15','13','14','16','8+4+2+1 = 15।'],
+['(100)₁₀ এর বাইনারি মান কোনটি?','1100100','1100110','1010100','1100010','100 = 64+32+4 = (1100100)₂।'],
+['(FF)₁₆ এর ডেসিমাল মান কত?','255','256','240','225','F = 15, তাই 15×16 + 15 = 255।'],
+['(17)₈ এর ডেসিমাল মান কত?','15','17','7','8','1×8 + 7 = 15।'],
+['(1101)₂ কে হেক্সাডেসিমালে লিখলে হয়-','D','B','E','C','1101 = 13 এবং হেক্সে 13 = D।'],
+['(A5)₁₆ এর বাইনারি মান কোনটি?','10100101','10101001','01011010','10100011','A = 1010, 5 = 0101, একসঙ্গে 10100101।'],
+['(64)₁₀ এর অক্টাল মান কত?','100','64','80','144','64 = 1×8² + 0×8 + 0 = (100)₈।'],
+['নিচের কোনটি অক্টাল সংখ্যা নয়?','128','127','365','710','অক্টালে শুধু 0 থেকে 7 অঙ্ক থাকে, 128-এ 8 আছে।'],
+['একটি ফ্লিপ-ফ্লপ কত বিট তথ্য সংরক্ষণ করতে পারে?','১ বিট','২ বিট','৪ বিট','৮ বিট','ফ্লিপ-ফ্লপ হলো ১ বিটের মেমোরি ঘর।'],
+['(0.5)₁₀ এর বাইনারি মান কত?','0.1','0.01','0.11','0.5','0.5 × 2 = 1.0, পূর্ণ অংশ 1, তাই (0.1)₂।'],
+['(11.1)₂ এর ডেসিমাল মান কত?','3.5','3.1','2.5','1.5','1×2 + 1 + 1×2⁻¹ = 2 + 1 + 0.5 = 3.5।'],
+['(1011)₂ এর ১-এর পরিপূরক কোনটি?','0100','0101','1100','1010','প্রতিটি বিট উল্টে দিলে 0100।'],
+['(1100)₂ এর ২-এর পরিপূরক কোনটি?','0100','0011','1100','1000','১-এর পরিপূরক 0011, এর সঙ্গে 1 যোগ করলে 0100।'],
+['59 এর BCD কোড কোনটি?','0101 1001','0101 1010','0011 1011','1001 0101','5 = 0101 এবং 9 = 1001, আলাদা আলাদা করে লিখতে হয়।'],
+['পাঠ্যবই অনুযায়ী ইউনিকোড কত বিটের কোড?','16 বিট','7 বিট','8 বিট','32 বিট','ASCII 7 বিটের, আর পাঠ্যবইয়ে ইউনিকোডকে 16 বিটের কোড বলা হয়েছে।'],
+['ASCII কোডে বড় হাতের A এর দশমিক মান কত?','65','97','48','64','A = 65, B = 66 …; ছোট হাতের a = 97।'],
+['AND গেটের আউটপুট কখন 1 হয়?','সব ইনপুট 1 হলে','যেকোনো একটি ইনপুট 1 হলে','সব ইনপুট 0 হলে','ইনপুট ভিন্ন হলে','AND গেটে গুণের মতো, একটিও 0 হলে আউটপুট 0।'],
+['OR গেটে ইনপুট (1, 0) হলে আউটপুট কত?','1','0','10','অনির্ধারিত','OR গেটে যেকোনো একটি ইনপুট 1 হলেই আউটপুট 1।'],
+['NOT গেটের কাজ কী?','ইনপুটের উল্টো মান দেয়','দুই ইনপুট যোগ করে','দুই ইনপুট গুণ করে','ইনপুট অপরিবর্তিত রাখে','NOT গেটকে ইনভার্টারও বলে।'],
+['কোন দুটি গেটকে ইউনিভার্সাল গেট বলা হয়?','NAND ও NOR','AND ও OR','XOR ও XNOR','NOT ও AND','NAND বা NOR দিয়ে যেকোনো লজিক সার্কিট বানানো যায়।'],
+['XOR গেটের আউটপুট কখন 1 হয়?','ইনপুট দুটি ভিন্ন হলে','ইনপুট দুটি সমান হলে','দুটিই 0 হলে','সবসময়','XOR = Exclusive OR, ভিন্ন ইনপুটে আউটপুট 1।'],
+['বুলিয়ান বীজগণিতে A + (A-এর উল্টো) = ?','1','0','A','2A','কোনো চলকের সঙ্গে তার পরিপূরক OR করলে ফল সবসময় 1।'],
+['ডি-মরগ্যানের উপপাদ্য অনুযায়ী (A·B) এর উল্টো = ?','(A এর উল্টো) + (B এর উল্টো)','(A এর উল্টো)·(B এর উল্টো)','A + B','A·B','দ্বিতীয় নিয়ম: (A+B) এর উল্টো = (A এর উল্টো)·(B এর উল্টো)।'],
+['হাফ অ্যাডারে ক্যারি আউটপুট পেতে কোন গেট লাগে?','AND','OR','NOT','NOR','হাফ অ্যাডারে Sum = A⊕B (XOR) এবং Carry = A·B (AND)।'],
+['n সংখ্যক আউটপুট লাইনবিশিষ্ট এনকোডারে সর্বোচ্চ কয়টি ইনপুট থাকে?','2ⁿ','n','n²','2n','এনকোডারে ইনপুট ২ⁿ টি আর আউটপুট n টি।']
+]),
+...mk(4,[
+['<title> ট্যাগ কোথায় বসে?','<head> এর ভেতরে','<body> এর শেষে','<footer> এ','<form> এর ভেতরে','title ব্রাউজারের ট্যাবে দেখা যায়, তাই এটি head অংশে থাকে।'],
+['কোন ট্যাগের ক্লোজিং ট্যাগ নেই?','<br>','<p>','<b>','<table>','<br>, <hr>, <img> এই ট্যাগগুলোর ক্লোজিং ট্যাগ লাগে না।'],
+['ক্রমিক তালিকা (1, 2, 3 …) তৈরির ট্যাগ কোনটি?','<ol>','<ul>','<li>','<dl>','ol = ordered list, ul = unordered list।'],
+['তালিকার প্রতিটি আইটেম লেখা হয় কোন ট্যাগে?','<li>','<ol>','<ul>','<item>','<li> = list item।'],
+['টেবিলের হেডারের ঘর তৈরি হয় কোন ট্যাগে?','<th>','<td>','<tr>','<tb>','th = table heading, যার লেখা সাধারণত বোল্ড ও মাঝখানে থাকে।'],
+['<a> ট্যাগে লিংকের ঠিকানা দিতে কোন attribute লাগে?','href','src','alt','link','<a href="ঠিকানা">লেখা</a>।'],
+['ছবি না দেখা গেলে বিকল্প লেখা দেখাতে <img> এর কোন attribute ব্যবহার হয়?','alt','src','title','href','alt attribute ছবির বিকল্প বর্ণনা দেয়।'],
+['HTML এ মন্তব্য (comment) লেখার সঠিক নিয়ম কোনটি?','<!-- মন্তব্য -->','// মন্তব্য','/* মন্তব্য */','# মন্তব্য','ব্রাউজার <!-- --> এর ভেতরের লেখা দেখায় না।'],
+['লেখা বাঁকা (ইটালিক) করতে কোন ট্যাগ ব্যবহার হয়?','<i>','<b>','<u>','<p>','<i> ইটালিক, <b> বোল্ড, <u> আন্ডারলাইন।'],
+['লেখার নিচে দাগ দিতে কোন ট্যাগ ব্যবহার হয়?','<u>','<i>','<b>','<s>','<u> = underline।'],
+['<hr> ট্যাগ কী তৈরি করে?','আড়াআড়ি রেখা','লাইন ভাঙা','তালিকা','টেবিল','hr = horizontal rule।'],
+['লেখা চলমান (স্ক্রল) করতে কোন ট্যাগ ব্যবহার হয়?','<marquee>','<scroll>','<move>','<slide>','<marquee> লেখাকে এক পাশ থেকে অন্য পাশে চালায়।'],
+['ফর্মে একটি টেক্সট ঘর তৈরি করার সঠিক নিয়ম কোনটি?','<input type="text">','<input type="textbox">','<text>','<form text>','input ট্যাগের type="text" দিলে লেখার ঘর হয়।'],
+['পাসওয়ার্ডের ঘর তৈরি করতে type এর মান কী হবে?','password','secret','hidden','text','type="password" দিলে লেখা তারকা বা বিন্দু আকারে দেখা যায়।'],
+['একাধিক অপশন থেকে মাত্র একটি বাছাই করার ঘর তৈরি হয় কোন type দিয়ে?','radio','checkbox','text','submit','radio button-এ একই name-এর মধ্যে একটিই নির্বাচন করা যায়।'],
+['একাধিক অপশন একসঙ্গে বাছাইয়ের ঘর তৈরি হয় কোন type দিয়ে?','checkbox','radio','password','reset','checkbox-এ একাধিক বেছে নেওয়া যায়।'],
+['ফর্ম জমা দেওয়ার বোতাম তৈরি হয় কোন type দিয়ে?','submit','send','button-go','post','<input type="submit"> ফর্মের তথ্য জমা দেয়।'],
+['টেবিলের একটি ঘরকে একাধিক কলাম জুড়ে নিতে কোন attribute লাগে?','colspan','rowspan','cellspan','merge','colspan = column span।'],
+['টেবিলের একটি ঘরকে একাধিক সারি জুড়ে নিতে কোন attribute লাগে?','rowspan','colspan','cellpadding','border','rowspan = row span।'],
+['HTML ফাইলের সাধারণ এক্সটেনশন কোনটি?','.html','.exe','.doc','.txt','ওয়েব পেজ সাধারণত .html বা .htm নামে সংরক্ষণ করা হয়।'],
+['CSS-এর পূর্ণরূপ কী?','Cascading Style Sheets','Computer Style Sheets','Creative Style System','Colorful Style Sheets','CSS ওয়েব পেজের সাজসজ্জা নিয়ন্ত্রণ করে।'],
+['ওয়েব পেজ দেখার সফটওয়্যারকে কী বলে?','ব্রাউজার','কম্পাইলার','ইন্টারপ্রেটার','এডিটর','Chrome, Firefox ইত্যাদি ওয়েব ব্রাউজার।'],
+['ওয়েবসাইটের প্রথম পাতাকে কী বলে?','হোমপেজ','ওয়েব সার্ভার','ডোমেইন','হোস্টিং','হোমপেজ হলো ওয়েবসাইটের শুরুর পাতা।'],
+['URL-এর পূর্ণরূপ কী?','Uniform Resource Locator','Universal Reading Link','United Resource Line','Unique Route Locator','URL ওয়েবের কোনো সম্পদের ঠিকানা।'],
+['x² লেখার ক্ষেত্রে ২ কে ওপরে ছোট করে লিখতে কোন ট্যাগ লাগে?','<sup>','<sub>','<small>','<top>','<sup> = superscript (ওপরে), <sub> = subscript (নিচে)।']
+]),
+...mk(5,[
+['অ্যাসেম্বলি ভাষাকে মেশিন ভাষায় রূপান্তর করে কোনটি?','অ্যাসেম্বলার','কম্পাইলার','ইন্টারপ্রেটার','লিংকার','অ্যাসেম্বলি ভাষার অনুবাদক সফটওয়্যারের নাম অ্যাসেম্বলার।'],
+['ইন্টারপ্রেটার কীভাবে কাজ করে?','এক লাইন করে অনুবাদ করে চালায়','পুরো প্রোগ্রাম একবারে অনুবাদ করে','কোড লেখে দেয়','শুধু ভুল ধরে','ইন্টারপ্রেটার লাইন ধরে ধরে অনুবাদ ও নির্বাহ করে।'],
+['কম্পিউটার সরাসরি বুঝতে পারে কোন ভাষা?','মেশিন ভাষা','অ্যাসেম্বলি ভাষা','C ভাষা','ইংরেজি','মেশিন ভাষা শুধু 0 ও 1 দিয়ে লেখা।'],
+['অ্যালগরিদম কী?','সমস্যা সমাধানের ধাপভিত্তিক পদ্ধতি','একটি প্রোগ্রামিং ভাষা','একটি হার্ডওয়্যার','একটি ডেটাবেজ','নির্দিষ্ট ধাপে সমস্যা সমাধানের নিয়মই অ্যালগরিদম।'],
+['ফ্লোচার্টে সিদ্ধান্ত বা শর্ত বোঝাতে কোন চিহ্ন ব্যবহার হয়?','ডায়মন্ড','আয়তক্ষেত্র','ডিম্বাকৃতি','সামান্তরিক','ডায়মন্ডে হ্যাঁ/না শর্ত থাকে।'],
+['ফ্লোচার্টে শুরু ও শেষ বোঝাতে কোন চিহ্ন ব্যবহার হয়?','ডিম্বাকৃতি','ডায়মন্ড','আয়তক্ষেত্র','বৃত্ত','Start/End টার্মিনাল চিহ্ন ডিম্বাকৃতি।'],
+['ফ্লোচার্টে ইনপুট বা আউটপুট বোঝাতে কোন চিহ্ন ব্যবহার হয়?','সামান্তরিক','ডায়মন্ড','ডিম্বাকৃতি','ত্রিভুজ','ইনপুট/আউটপুটের জন্য সামান্তরিক ব্যবহার করা হয়।'],
+['C ভাষায় printf("%d", 10/3); এর আউটপুট কী?','3','3.33','3.0','1','দুটি পূর্ণসংখ্যার ভাগ হলে ফল পূর্ণসংখ্যা হয়, তাই 3।'],
+['C ভাষায় 10 % 3 এর মান কত?','1','3','0','3.33','% চিহ্ন ভাগশেষ দেয়। 10 ÷ 3 এ ভাগশেষ 1।'],
+['float ডেটা ছাপার ফরম্যাট স্পেসিফায়ার কোনটি?','%f','%d','%c','%s','%f দশমিক সংখ্যার জন্য।'],
+['একটি অক্ষর (char) ছাপতে ফরম্যাট স্পেসিফায়ার কোনটি?','%c','%d','%f','%s','%c = character।'],
+['C ভাষায় a++ এর অর্থ কী?','a = a + 1','a = a − 1','a = a × 2','a = 1','++ হলো ইনক্রিমেন্ট, মান 1 বাড়ায়।'],
+['C ভাষায় == চিহ্নের অর্থ কী?','সমান কি না তুলনা','মান নির্ধারণ','না-সমান','যোগ','= মান বসায় আর == তুলনা করে।'],
+['&& কোন লজিক্যাল অপারেটর?','AND','OR','NOT','XOR','&& হলে দুই শর্তই সত্য হতে হয়।'],
+['for(i=1; i<=5; i++) লুপটি কতবার চলবে?','5 বার','4 বার','6 বার','অসীম','i এর মান 1, 2, 3, 4, 5 পর্যন্ত শর্ত সত্য, মোট 5 বার।'],
+['int a[10]; অ্যারের শেষ সূচক (index) কত?','9','10','11','1','অ্যারের সূচক 0 থেকে শুরু, তাই 0 থেকে 9।'],
+['int x = 5; x += 3; এরপর x এর মান কত?','8','5','3','15','x += 3 মানে x = x + 3।'],
+['C ভাষায় এক লাইনের মন্তব্য লেখা হয় কীভাবে?','// দিয়ে','<!-- --> দিয়ে','# দিয়ে','-- দিয়ে','// এর পরের লাইনের অংশ কম্পাইলার উপেক্ষা করে।'],
+['যে নামে মান জমা রাখা হয় এবং যার মান বদলানো যায় তাকে কী বলে?','ভেরিয়েবল','কনস্ট্যান্ট','কিওয়ার্ড','ফাংশন','ভেরিয়েবল মেমোরিতে মান রাখার নাম।'],
+['নিচের কোনটি C ভাষার বৈধ ভেরিয়েবল নাম?','_total','2sum','total sum','int','নাম অঙ্ক দিয়ে শুরু হয় না, স্পেস থাকে না, কিওয়ার্ডও হয় না।'],
+['ফাংশনের আগে void লেখা থাকলে এর অর্থ কী?','কোনো মান ফেরত দেয় না','পূর্ণসংখ্যা ফেরত দেয়','দশমিক ফেরত দেয়','ফাংশনটি ভুল','void মানে ফাঁকা, কোনো মান ফেরত আসে না।'],
+['while লুপ কখন বন্ধ হয়?','শর্ত মিথ্যা হলে','শর্ত সত্য হলে','একবার চলার পর','কখনোই না','শর্ত সত্য থাকা পর্যন্ত চলে, মিথ্যা হলে থামে।'],
+['লুপের ভেতরে break ব্যবহার করলে কী হয়?','লুপ থেকে বের হয়ে যায়','লুপ আবার শুরু হয়','প্রোগ্রাম মুছে যায়','পরের ধাপ বাদ যায় শুধু','break লুপকে সঙ্গে সঙ্গে শেষ করে দেয়।'],
+['#include কোন ধরনের নির্দেশনা?','প্রিপ্রসেসর ডিরেক্টিভ','লুপ','ফাংশন','ভেরিয়েবল','#include হেডার ফাইল যুক্ত করে, কম্পাইলের আগে এটি কাজ করে।'],
+['প্রোগ্রাম চলে কিন্তু ভুল ফল দেয়। এটি কোন ধরনের ত্রুটি?','লজিক্যাল ত্রুটি','সিনট্যাক্স ত্রুটি','ফাইল ত্রুটি','হার্ডওয়্যার ত্রুটি','চলে কিন্তু ফল ভুল হলে যুক্তিতে ভুল থাকে, একে লজিক্যাল এরর বলে।']
+]),
+...mk(6,[
+['ডেটাবেজ কী?','সংগঠিতভাবে রাখা ডেটার সংগ্রহ','একটি প্রোগ্রামিং ভাষা','একটি নেটওয়ার্ক ডিভাইস','একটি ইনপুট ডিভাইস','ডেটাবেজ হলো পরস্পর সম্পর্কিত ডেটার সুসংগঠিত সংগ্রহ।'],
+['ডেটা রিডানড্যান্সি কী?','একই ডেটার অপ্রয়োজনীয় পুনরাবৃত্তি','ডেটা মুছে যাওয়া','ডেটা সুরক্ষিত থাকা','ডেটা বড় হওয়া','একই তথ্য বারবার থাকলে জায়গা নষ্ট হয় ও গরমিল হয়।'],
+['DBMS ব্যবহারের একটি সুবিধা কোনটি?','ডেটা রিডানড্যান্সি কমে','ডেটার নিরাপত্তা কমে','ডেটা খুঁজতে বেশি সময় লাগে','ডেটা ভাগ করা যায় না','DBMS ডেটা নিরাপদ, সংগঠিত ও কম পুনরাবৃত্তিপূর্ণ রাখে।'],
+['ফরেন কি (Foreign Key) কী?','অন্য টেবিলের প্রাইমারি কি যা সম্পর্ক তৈরি করে','টেবিলের প্রথম কলাম','বিদেশি ভাষার ডেটা','একটি এনক্রিপশন কোড','ফরেন কি দুটি টেবিলকে যুক্ত করে।'],
+['কোয়েরি (Query) কী?','ডেটাবেজ থেকে তথ্য খোঁজার অনুরোধ','ডেটাবেজ মুছে ফেলা','টেবিলের নাম','ডেটাবেজের ব্যাকআপ','কোয়েরির মাধ্যমে শর্ত দিয়ে প্রয়োজনীয় তথ্য বের করা হয়।'],
+['SQL-এ ডেটা দেখার কমান্ড কোনটি?','SELECT','INSERT','DELETE','CREATE','SELECT দিয়ে টেবিল থেকে ডেটা আনা হয়।'],
+['SQL-এ নতুন রেকর্ড যোগ করার কমান্ড কোনটি?','INSERT','SELECT','UPDATE','DROP','INSERT INTO দিয়ে নতুন সারি যোগ হয়।'],
+['SQL-এ রেকর্ড মুছতে কোন কমান্ড ব্যবহার হয়?','DELETE','INSERT','SELECT','ALTER','DELETE FROM দিয়ে রেকর্ড মোছা হয়।'],
+['SQL-এ বিদ্যমান রেকর্ড পরিবর্তন করতে কোন কমান্ড ব্যবহার হয়?','UPDATE','INSERT','CREATE','SELECT','UPDATE ... SET ... দিয়ে মান বদলানো হয়।'],
+['SQL-এ শর্ত দিতে কোন ক্লজ ব্যবহার হয়?','WHERE','ORDER BY','GROUP','FROM','WHERE ক্লজ দিয়ে শর্ত মেলে এমন রেকর্ড বাছাই করা হয়।'],
+['SQL-এ ফলাফল সাজাতে কোন ক্লজ ব্যবহার হয়?','ORDER BY','WHERE','SELECT','INSERT','ORDER BY ক্রমানুসারে (ASC/DESC) সাজায়।'],
+['নতুন টেবিল তৈরির SQL কমান্ড কোনটি?','CREATE TABLE','NEW TABLE','MAKE TABLE','ADD TABLE','CREATE TABLE দিয়ে টেবিল তৈরি হয়।'],
+['টেবিল পুরোপুরি মুছে ফেলতে কোন কমান্ড লাগে?','DROP TABLE','DELETE ROW','REMOVE','CLEAR','DROP TABLE টেবিলের কাঠামোসহ সব মুছে দেয়।'],
+['ডেটাবেজ নিয়ন্ত্রণ ও রক্ষণাবেক্ষণের দায়িত্বে থাকেন কে?','ডেটাবেজ অ্যাডমিনিস্ট্রেটর (DBA)','প্রোগ্রামার','এন্ড ইউজার','নেটওয়ার্ক টেকনিশিয়ান','DBA ডেটাবেজের নিরাপত্তা, ব্যাকআপ ও অনুমতি দেখেন।'],
+['নরমালাইজেশনের মূল উদ্দেশ্য কী?','রিডানড্যান্সি কমানো','ডেটা বাড়ানো','টেবিল মুছে ফেলা','কোয়েরি বন্ধ করা','নরমালাইজেশনে টেবিল ভেঙে ডেটার অপ্রয়োজনীয় পুনরাবৃত্তি কমানো হয়।'],
+['ER ডায়াগ্রামে এনটিটি বোঝাতে কোন চিহ্ন ব্যবহার হয়?','আয়তক্ষেত্র','ডিম্বাকৃতি','ডায়মন্ড','ত্রিভুজ','এনটিটি আয়তক্ষেত্র, অ্যাট্রিবিউট ডিম্বাকৃতি, সম্পর্ক ডায়মন্ড।'],
+['এনটিটির বৈশিষ্ট্যকে কী বলে?','অ্যাট্রিবিউট','রিলেশন','কোয়েরি','রিপোর্ট','যেমন ছাত্র এনটিটির অ্যাট্রিবিউট নাম, রোল।'],
+['একজন শিক্ষক অনেক শিক্ষার্থীকে পড়ান। এটি কোন ধরনের সম্পর্ক?','এক-থেকে-অনেক (1:M)','এক-থেকে-এক (1:1)','অনেক-থেকে-অনেক (M:M)','কোনোটিই নয়','একটি শিক্ষকের সঙ্গে অনেক শিক্ষার্থী যুক্ত, তাই 1:M।'],
+['SELECT * FROM student; কমান্ডে * এর অর্থ কী?','সব কলাম','সব টেবিল','সব ডেটাবেজ','প্রথম সারি','* মানে সবগুলো ফিল্ড।'],
+['একটি টেবিলে প্রাইমারি কি কয়টি থাকতে পারে?','একটি','দুটি','তিনটি','যত খুশি','প্রতিটি টেবিলে একটিই প্রাইমারি কি থাকে (এটি একাধিক ফিল্ড মিলেও হতে পারে)।'],
+['নিচের কোনটি DDL কমান্ড?','CREATE','INSERT','SELECT','UPDATE','DDL = Data Definition Language, গঠন তৈরি করে। CREATE, ALTER, DROP এর অন্তর্ভুক্ত।'],
+['DML-এর পূর্ণরূপ কী?','Data Manipulation Language','Data Management Logic','Digital Memory Language','Database Master Language','DML দিয়ে ডেটা যোগ, বদল ও মোছা হয়।'],
+['MS Access-এ স্বয়ংক্রিয়ভাবে ক্রমিক সংখ্যা তৈরি করে কোন ডেটা টাইপ?','অটোনাম্বার','টেক্সট','মেমো','ইয়েস/নো','অটোনাম্বার প্রতিটি নতুন রেকর্ডে নিজে থেকে নম্বর বাড়ায়।'],
+['ডেটাবেজ রিপোর্টের কাজ কী?','প্রিন্টের উপযোগী করে তথ্য উপস্থাপন','ডেটা মুছে ফেলা','ডেটাবেজ সংরক্ষণ','টেবিল তৈরি','রিপোর্টে ডেটা সাজিয়ে প্রিন্ট বা দেখানোর উপযোগী করা হয়।'],
+['MS Access-এ ফর্মের কাজ কী?','সহজে ডেটা ইনপুট ও দেখার ইন্টারফেস দেওয়া','ডেটা মুছে ফেলা','ডেটা সংকুচিত করা','কোড কম্পাইল করা','ফর্ম ব্যবহারকারীকে সুন্দরভাবে ডেটা এন্ট্রি করতে সাহায্য করে।']
+])
+);
+
+let qs=[],qi=0,qsc=0,qans=[],qch=0;
+const sh=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function qChips(){
+  $('#q-ch').innerHTML='';
+  [['মিশ্র ৩০টি',0],...CH.map((c,i)=>[`${CHN[i]}`,i+1])].forEach(([t,v])=>{
+    const b=document.createElement('button');b.className='pill'+(qch===v?' on':'');b.type='button';b.textContent=t;b.title=v?CH[v-1]:'';
+    b.onclick=()=>{qch=v;qStart()};$('#q-ch').append(b)});
+}
+let qcustom=false;
+const lab=q=>q.ch?CHN[q.ch-1]:q.tag;
+const BESTTXT=()=>{const b=store.get('ict-best');return b?`সর্বোচ্চ স্কোর (মিশ্র ৩০টি): ${bn(b)}/৩০`:''};
+function mapQ(q){const idx=sh([0,1,2,3]);return{ch:q[0],q:q[1],o:idx.map(i=>q[2][i]),a:idx.indexOf(q[3]),e:q[4]}}
+function qStart(){
+  qcustom=false;
+  let pool=sh(Q.filter(q=>!qch||q[0]===qch));
+  if(!qch)pool=pool.slice(0,30);
+  qs=pool.map(mapQ);qi=0;qsc=0;qans=[];qChips();qRender();
+  $('#q-best').textContent=BESTTXT();
+}
+function startCustom(list,tag){
+  qcustom=true;qch=-1;
+  qs=sh(list).map(x=>{const idx=sh([0,1,2,3]);return{ch:0,tag,q:x.q,n:x.n,o:idx.map(i=>x.o[i]),a:idx.indexOf(x.a),e:(x.e||'')+(x.ai?' (উত্তরটি এআই ঠিক করেছে, বোর্ডের উত্তরমালা বা শিক্ষকের কাছে মিলিয়ে নিয়ো।)':'')}});
+  qi=0;qsc=0;qans=[];qChips();qRender();$('#q-best').textContent='';show('quiz');
+}
+function qRender(){
+  const o=$('#q-body'),n=qs.length;
+  if(qi>=n){
+    if(!qch&&!qcustom){const b=+store.get('ict-best')||0;if(qsc>b){store.set('ict-best',qsc);$('#q-best').textContent=BESTTXT()}}
+    const p=Math.round(qsc/n*100);
+    const wrong=qs.map((q,i)=>({q,i})).filter(x=>qans[x.i]!==x.q.a);
+    o.innerHTML=`<p class="hint" style="margin:0">তোমার ফলাফল</p><div class="score">${bn(qsc)}<span style="font-size:26px;color:var(--ink-2)">/${bn(n)}</span></div>
+     <p>${p>=80?'চমৎকার! তুমি প্রস্তুত।':p>=50?'ভালো করেছ। ভুলগুলো একবার দেখে নাও।':'চিন্তা নেই। বইয়ের অধ্যায়টা আরেকবার পড়ে আবার চেষ্টা করো।'}</p>
+     ${wrong.length?'<h3>যেগুলো ভুল হয়েছে</h3>'+wrong.map(x=>`<div class="expl"><b>${esc(x.q.q)}</b><br>সঠিক উত্তর: ${esc(x.q.o[x.q.a])}<br>${esc(x.q.e)}<br><span class="hint">${x.q.ch?'অধ্যায়: '+CH[x.q.ch-1]:esc(x.q.tag)}</span></div>`).join(''):''}
+     <div class="row" style="margin-top:16px"><button class="btn" id="q-again">আবার দাও</button></div>`;
+    $('#q-again').onclick=qStart;return}
+  const q=qs[qi];
+  o.innerHTML=`<div class="qtop"><span class="hint">প্রশ্ন ${bn(qi+1)}/${bn(n)} · ${lab(q)}</span><span class="hint">স্কোর ${bn(qsc)}</span></div>
+   <div class="bar-p"><i style="width:${qi/n*100}%"></i></div>
+   <div class="q">${esc(q.q)}</div>${q.n?`<div class="expl" style="margin:0 0 10px">${esc(q.n)}</div>`:''}<div id="q-opts"></div><div id="q-fb"></div>`;
+  q.o.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.className='opt';
+    b.innerHTML=`<span class="k">${'কখগঘ'[i]}</span><span>${esc(t)}</span>`;
+    b.onclick=()=>{
+      qans[qi]=i;if(i===q.a)qsc++;
+      $$('#q-opts .opt').forEach((x,j)=>{x.disabled=true;if(j===q.a)x.classList.add('ok');else if(j===i)x.classList.add('bad')});
+      $('#q-fb').innerHTML=`<div class="expl"><b>${i===q.a?'ঠিক!':'ভুল হয়েছে।'}</b> ${esc(q.e)}<br><span class="hint">${q.ch?'বইয়ের অধ্যায়: '+CH[q.ch-1]:esc(q.tag)}</span></div>
+       <div class="row" style="margin-top:12px"><button class="btn" id="q-next">${qi===n-1?'ফলাফল দেখো':'পরের প্রশ্ন'}</button></div>`;
+      $('#q-next').focus();$('#q-next').onclick=()=>{qi++;qRender()};
+    };$('#q-opts').append(b)});
+}
+
+/* ================= AI SOLVER ================= */
+const SYS=`তুমি বাংলাদেশের একজন অভিজ্ঞ HSC ICT (তথ্য ও যোগাযোগ প্রযুক্তি) শিক্ষক। একাদশ–দ্বাদশ শ্রেণির শিক্ষার্থীদের এনসিটিবি পাঠ্যবই অনুসারে সাহায্য করো। সহজ, স্বাভাবিক বাংলায় লেখো।
+
+নিয়ম:
+1. ছবি থাকলে আগে ছবি থেকে প্রশ্নটি হুবহু তুলে লেখো ("প্রশ্ন:" শিরোনামে)। অস্পষ্ট হলে কোথায় অস্পষ্ট বলো এবং তোমার অনুমানটা জানাও।
+2. সমাধান ধাপে ধাপে, খুব সহজ বাংলায় বোঝাও। প্রতিটি ধাপে কী করছ এবং কেন করছ লেখো।
+3. সংখ্যা পদ্ধতির অঙ্কে সব হিসাব দুইবার যাচাই করো। সংখ্যার ভিত্তি লিখবে সাবস্ক্রিপ্টে, যেমন (1010)₂, (25)₁₀, (7A)₁₆। LaTeX ব্যবহার করবে না।
+4. শেষে "পাঠ্যবইয়ের সূত্র" শিরোনামে অধ্যায়ের নাম ও সংশ্লিষ্ট অনুচ্ছেদ বা নিয়মের নাম লেখো। পৃষ্ঠা নম্বর কেবল তখনই দেবে যখন তুমি নিশ্চিত। সংস্করণভেদে পৃষ্ঠা আলাদা হয়, তাই নিশ্চিত না হলে লেখো "পৃষ্ঠা নম্বর সংস্করণভেদে আলাদা, বইয়ের সূচিপত্রে অধ্যায়টি দেখে নাও"। পৃষ্ঠা নম্বর বানাবে না।
+5. কঠিন ইংরেজি শব্দ এড়াও। দরকার হলে বাংলা শব্দ পাশে দাও, যেমন রেকর্ড (সারি), ফিল্ড (কলাম)।
+6. সুর উৎসাহব্যঞ্জক ও বন্ধুত্বপূর্ণ রাখো। শেষে একটি "মনে রাখার টিপস" দাও।
+7. HTML বা C প্রোগ্রামিংয়ের প্রশ্নে কোড \`\`\` ব্লকে দাও এবং লাইন ধরে ব্যাখ্যা করো।
+8. প্রশ্ন ICT বিষয়ের বাইরে হলে বিনয়ের সাথে জানাও যে তুমি শুধু HSC ICT-তে সাহায্য করতে পারো।
+9. শিরোনামের জন্য #### ব্যবহার করো, তালিকার জন্য - বা 1. ব্যবহার করো। টেবিল ব্যবহার করবে না।
+10. অধ্যায়গুলো: ১ তথ্য ও যোগাযোগ প্রযুক্তি: বিশ্ব ও বাংলাদেশ প্রেক্ষিত; ২ কমিউনিকেশন সিস্টেমস ও কম্পিউটার নেটওয়ার্কিং; ৩ সংখ্যা পদ্ধতি ও ডিজিটাল ডিভাইস; ৪ ওয়েব ডিজাইন পরিচিতি ও HTML; ৫ প্রোগ্রামিং ভাষা; ৬ ডেটাবেজ ম্যানেজমেন্ট সিস্টেম।`;
+function md(t){
+  const parts=t.split(/```[a-z]*\n?/);let out='';
+  parts.forEach((p,i)=>{
+    if(i%2){out+=`<pre>${esc(p.replace(/\n$/,''))}</pre>`;return}
+    let ul=false,ol=false;const close=()=>{if(ul){out+='</ul>';ul=false}if(ol){out+='</ol>';ol=false}};
+    const inl=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/`([^`]+)`/g,'<code>$1</code>');
+    p.split('\n').forEach(l=>{
+      let m;
+      if((m=l.match(/^#{1,6}\s+(.*)/))){close();out+=`<h4>${inl(m[1])}</h4>`}
+      else if((m=l.match(/^\s*[-*•]\s+(.*)/))){if(!ul){close();out+='<ul>';ul=true}out+=`<li>${inl(m[1])}</li>`}
+      else if((m=l.match(/^\s*\d+[.)]\s+(.*)/))){if(!ol){close();out+='<ol>';ol=true}out+=`<li>${inl(m[1])}</li>`}
+      else if(l.trim()===''){close()}
+      else{close();out+=`<p>${inl(l)}</p>`}
+    });close();
+  });
+  return out;
+}
+$('#c-ch').innerHTML='<option value="">সব অধ্যায়</option>'+CH.map((c,i)=>`<option value="${i+1}">${CH[i]}</option>`).join('');
+$('#c-ch').title='অধ্যায় বেছে নিলে উত্তর সেই অধ্যায়ের নিয়ম অনুসারে হবে';
+const SUGG=['(1101.011)₂ কে ডেসিমালে রূপান্তর করো','(156)₁₀ কে হেক্সাডেসিমালে রূপান্তর করো','(1001)₂ − (0110)₂ কত? ২-এর পরিপূরক পদ্ধতিতে করো','একটি HTML টেবিল বানাও, যেখানে ৩ জনের নাম ও নম্বর থাকবে','প্রাইমারি কি কী? উদাহরণসহ বোঝাও','ফুল ডুপ্লেক্স ও হাফ ডুপ্লেক্সের পার্থক্য কী?'];
+let sampleFn=null,imgBlob=null,busy=false,hist=[];
+const msgs=$('#c-msgs');
+const toB64=b=>new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(String(r.result).split(',')[1]);r.onerror=no;r.readAsDataURL(b)});
+async function webSample(input,opts={}){
+  const messages=typeof input==='string'?[{role:'user',content:input}]:input;
+  const images=[];
+  for(const b of (opts.images||[]))images.push({media_type:b.type||'image/jpeg',data:await toB64(b)});
+  let r;
+  try{r=await fetch('/api/ai',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({messages,images})})}catch(e){throw{code:'network'}}
+  if(!r.ok)throw{code:r.status===429?'rate_limited':'error'};
+  const j=await r.json();
+  if(opts.onText)opts.onText({text:j.text});
+  return{text:j.text};
+}
+webSample.limits=async()=>({images:true});
+(async()=>{try{sampleFn=window.claude?await window.claude.use('sample'):webSample}catch(e){sampleFn=null}})();
+const toEnd=()=>window.scrollTo({top:document.documentElement.scrollHeight});
+function addUser(h){const d=document.createElement('div');d.className='m user';d.innerHTML=`<div class="bub">${h}</div>`;msgs.append(d);toEnd()}
+function addAI(h){const d=document.createElement('div');d.className='m ai';d.innerHTML=`<span class="av" aria-hidden="true">AI</span><div class="col"><div class="bub md">${h}</div></div>`;msgs.append(d);toEnd();return d}
+function welcome(){
+  hist=[];msgs.innerHTML='';
+  const d=addAI(`<p><b>আসসালামু আলাইকুম!</b> আমি তোমার ICT শিক্ষক। সংখ্যা পদ্ধতি, HTML, নেটওয়ার্ক, প্রোগ্রামিং বা ডেটাবেজ, যেকোনো অধ্যায়ের প্রশ্ন করতে পারো। অঙ্কের ছবি তুলে দিলেও চলবে।</p><p>নিচের একটি দিয়ে শুরু করতে পারো:</p><div class="sugg"></div>`);
+  SUGG.forEach(t=>{const b=document.createElement('button');b.className='chip';b.type='button';b.textContent=t;b.onclick=()=>send(t);d.querySelector('.sugg').append(b)});
+  window.scrollTo({top:0});
+}
+async function shrink(f){
+  try{const bmp=await createImageBitmap(f);const s=Math.min(1,1600/Math.max(bmp.width,bmp.height));
+    const c=document.createElement('canvas');c.width=Math.round(bmp.width*s);c.height=Math.round(bmp.height*s);
+    c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);
+    return await new Promise(r=>c.toBlob(b=>r(b||f),'image/jpeg',.88))}catch(e){return f}
+}
+$('#c-att').onclick=()=>$('#c-file').click();
+$('#c-file').onchange=async e=>{const f=e.target.files[0];if(!f)return;
+  imgBlob=await shrink(f);$('#c-thumb').src=URL.createObjectURL(imgBlob);$('#c-prev').hidden=false;e.target.value=''};
+$('#c-rm').onclick=()=>{imgBlob=null;$('#c-prev').hidden=true};
+const inp=$('#c-in');
+inp.addEventListener('input',()=>{inp.style.height='44px';inp.style.height=Math.min(inp.scrollHeight,150)+'px'});
+inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();send(inp.value)}});
+$('#c-send').onclick=()=>send(inp.value);
+$('#c-new').onclick=()=>{if(!busy){welcome()}};
+function actions(col){
+  const r=document.createElement('div');r.className='sugg';r.dataset.act='1';
+  [['আরও সহজ করে বোঝাও','এই সমাধানটি আরও সহজ করে বোঝাও। যেন ক্লাস নাইনের একজন শিক্ষার্থীও বুঝতে পারে। ছোট ছোট ধাপে লেখো।'],['একই ধরনের আরেকটি অঙ্ক দাও','এই ধরনের আরেকটি অঙ্ক বা প্রশ্ন দাও এবং তার পূর্ণ সমাধান ধাপে ধাপে বুঝিয়ে দাও।'],['এই অধ্যায়ের একটি MCQ দাও','এই বিষয়ের ওপর একটি MCQ প্রশ্ন দাও (চারটি অপশনসহ)। উত্তর আমি দিলে তুমি ঠিক-ভুল বলবে, তাই এখন উত্তর দেখাবে না।']].forEach(([l,m])=>{
+    const b=document.createElement('button');b.className='chip';b.type='button';b.textContent=l;b.onclick=()=>send(m);r.append(b)});
+  col.append(r);
+}
+async function send(text){
+  text=(text||'').trim();
+  if((!text&&!imgBlob)||busy)return;
+  const blob=imgBlob,ch=$('#c-ch').value;
+  $$('[data-act]').forEach(x=>x.remove());
+  let uh='';if(blob)uh+=`<img class="thumb" src="${URL.createObjectURL(blob)}" alt="আপলোড করা ছবি">`;
+  if(text)uh+=`<div>${esc(text).replace(/\n/g,'<br>')}</div>`;
+  addUser(uh);inp.value='';inp.style.height='44px';imgBlob=null;$('#c-prev').hidden=true;
+  const turn=(ch?`[অধ্যায়: ${CH[ch-1]}]\n`:'')+(blob?'[সঙ্গে একটি ছবি দেওয়া আছে, ছবির প্রশ্নটি সমাধান করো]\n':'')+(text||'(ছবির প্রশ্ন)');
+  const ai=addAI('<span class="dots"><i></i><i></i><i></i></span>'),bub=ai.querySelector('.bub'),col=ai.querySelector('.col');
+  if(!sampleFn){bub.innerHTML='<div class="err">এআই এই মুহূর্তে চালু নেই। তবে কনভার্টার, HTML ল্যাব ও কুইজ ঠিকঠাক কাজ করবে।</div>';return}
+  busy=true;$('#c-send').disabled=true;
+  hist.push({role:'user',content:turn});
+  try{
+    let arr=hist.slice(-7);while(arr.length&&arr[0].role!=='user')arr.shift();
+    arr=arr.map((m,i)=>i===0?{...m,content:SYS+'\n\n'+m.content}:m);
+    const opts={modelTier:'default',cache:false,onText:({text})=>{bub.innerHTML=md(text);toEnd()}};
+    if(blob){let ok=false;try{ok=!!(await sampleFn.limits()).images}catch(e){}
+      if(!ok)throw{code:'noimg'};opts.images=[blob]}
+    const r=await sampleFn(arr,opts);
+    bub.innerHTML=md(r.text);hist.push({role:'assistant',content:r.text});actions(col);
+  }catch(e){
+    hist.pop();
+    const m=e&&e.code==='not_granted'?'এআই ব্যবহারের অনুমতি দেওয়া হয়নি। আবার পাঠালে অনুমতি চাইবে।':e&&e.code==='rate_limited'?'অনেক বেশি অনুরোধ হয়েছে। একটু পরে আবার চেষ্টা করো।':e&&e.code==='noimg'?'এই মুহূর্তে ছবি পড়া যাচ্ছে না। প্রশ্নটি লিখে পাঠাও।':'উত্তর আনা যায়নি। ইন্টারনেট দেখে আবার পাঠাও।';
+    bub.innerHTML=`<div class="err">${m}</div>`;
+  }finally{busy=false;$('#c-send').disabled=false;toEnd();inp.focus()}
+}
+
+
+/* ================= PROGRAMMING LAB ================= */
+const GS={
+ 'Hello World':'#include <stdio.h>\n\nint main()\n{\n    printf("Hello, HSC ICT!\\n");\n    return 0;\n}\n',
+ 'দুটি সংখ্যার যোগ':'#include <stdio.h>\n\nint main()\n{\n    int a, b, sum;\n    scanf("%d %d", &a, &b);\n    sum = a + b;\n    printf("Sum = %d\\n", sum);\n    return 0;\n}\n',
+ 'জোড় না বিজোড়':'#include <stdio.h>\n\nint main()\n{\n    int n;\n    scanf("%d", &n);\n    if (n % 2 == 0)\n        printf("%d is Even\\n", n);\n    else\n        printf("%d is Odd\\n", n);\n    return 0;\n}\n',
+ '১ থেকে ১০ (for লুপ)':'#include <stdio.h>\n\nint main()\n{\n    int i;\n    for (i = 1; i <= 10; i++)\n    {\n        printf("%d ", i);\n    }\n    return 0;\n}\n',
+ 'ফ্যাক্টরিয়াল (while)':'#include <stdio.h>\n\nint main()\n{\n    int n, f = 1;\n    scanf("%d", &n);\n    while (n > 0)\n    {\n        f = f * n;\n        n--;\n    }\n    printf("Factorial = %d\\n", f);\n    return 0;\n}\n',
+ 'অ্যারে':'#include <stdio.h>\n\nint main()\n{\n    int a[5] = {4, 8, 15, 16, 23};\n    int i, sum = 0;\n    for (i = 0; i < 5; i++)\n        sum = sum + a[i];\n    printf("Total = %d\\n", sum);\n    return 0;\n}\n',
+ 'ফাংশন':'#include <stdio.h>\n\nint square(int x)\n{\n    return x * x;\n}\n\nint main()\n{\n    printf("%d\\n", square(6));\n    return 0;\n}\n',
+ 'ভুল কোড (ত্রুটি ধরো)':'#include <stdio.h>\n\nint main()\n{\n    int a, b\n    scanf("%d", a);\n    if (a = 5)\n        printf("Five"\n    return 0;\n}\n'
+};
+Object.keys(GS).forEach(k=>{const b=document.createElement('button');b.className='chip';b.type='button';b.textContent=k;
+  b.onclick=()=>{$('#g-code').value=GS[k];$('#g-out').innerHTML='<p class="hint">কোড বদলেছে। "ত্রুটি খুঁজি" বা "চালাও" চাপো।</p>'};$('#g-ex').append(b)});
+$('#g-code').value=GS['দুটি সংখ্যার যোগ'];$('#g-stdin').value='5 7';
+const GR=[['#include <stdio.h>','printf, scanf ব্যবহারের জন্য হেডার ফাইল'],['int main()','প্রোগ্রাম এখান থেকে শুরু হয়'],['{ }','ফাংশন বা ব্লকের শুরু ও শেষ'],[';','প্রতিটি স্টেটমেন্টের শেষে বসে'],
+ ['int  float  char  double','পূর্ণসংখ্যা, দশমিক, একটি অক্ষর, বড় দশমিক সংখ্যার ডেটা টাইপ'],['printf("%d", x);','আউটপুট দেখায়। %d পূর্ণসংখ্যা, %f দশমিক, %c অক্ষর, %s স্ট্রিং'],
+ ['scanf("%d", &x);','ইনপুট নেয়। ভেরিয়েবলের আগে & দিতে হয়'],['if ( ) { } else { }','শর্ত দেখে সিদ্ধান্ত নেয়। তুলনায় == ব্যবহার করো'],['for(i=1; i<=n; i++)','নির্দিষ্ট বার লুপ চালায়'],['while ( )','শর্ত সত্য থাকা পর্যন্ত লুপ চালায়'],
+ ['int a[5];','৫টি পূর্ণসংখ্যার অ্যারে (সূচক 0 থেকে 4)'],['return 0;','ফাংশন শেষ করে মান ফেরত দেয়'],['// ...  /* ... */','মন্তব্য (কম্পাইলার এটি উপেক্ষা করে)']];
+$('#g-ref').innerHTML='<tr><th>নিয়ম</th><th>কাজ</th></tr>'+GR.map(([a,b])=>`<tr><td>${esc(a)}</td><td>${b}</td></tr>`).join('');
+
+function checkC(src){
+  const out=[];const L=src.split('\n');
+  // strip comments & strings, keep line structure
+  let t=src.replace(/\/\*[\s\S]*?\*\//g,m=>m.replace(/[^\n]/g,' ')).replace(/\/\/[^\n]*/g,m=>' '.repeat(m.length));
+  t=t.replace(/"(\\.|[^"\\\n])*"/g,m=>'"'+' '.repeat(Math.max(0,m.length-2))+'"');
+  const T=t.split('\n');
+  if(!/\bmain\s*\(/.test(t))out.push(['err',0,'main() ফাংশন পাওয়া যায়নি। প্রতিটি C প্রোগ্রামে main() থাকতে হয়।']);
+  if(/\b(printf|scanf)\b/.test(t)&&!/#\s*include\s*<stdio\.h>/.test(src))out.push(['err',0,'printf/scanf ব্যবহার করেছ, কিন্তু #include <stdio.h> নেই।']);
+  // brackets
+  const pairs={')':'(',']':'[','}':'{'},stack=[];
+  T.forEach((ln,i)=>{[...ln].forEach(ch=>{
+    if('([{'.includes(ch))stack.push([ch,i+1]);
+    else if(pairs[ch]){const top=stack.pop();if(!top||top[0]!==pairs[ch])out.push(['err',i+1,`"${ch}" এর জোড়া মিলছে না।`])}})});
+  stack.forEach(([ch,ln])=>out.push(['err',ln,`"${ch}" খোলা হয়েছে, কিন্তু বন্ধ করা হয়নি।`]));
+  // statements
+  const nxt=i=>{for(let j=i+1;j<T.length;j++)if(T[j].trim())return T[j].trim();return''};
+  T.forEach((raw,i)=>{
+    const l=raw.trim();if(!l||l[0]==='#')return;
+    if(/^(printf|scanf|return|break|continue)\b/.test(l)&&!/[;{}]\s*$/.test(l)){
+      if(!/,\s*$|\(\s*$/.test(l)&&!/^(printf|scanf)\b[^;]*$/.test(l+nxt(i)[0]||'')) out.push(['err',i+1,'লাইনের শেষে ; (সেমিকোলন) নেই।']);
+      else if(!/[,(]\s*$/.test(l))out.push(['err',i+1,'লাইনের শেষে ; (সেমিকোলন) নেই।']);
+    }else if(/^(int|float|char|double|long|short)\b/.test(l)&&!/[;{}]\s*$/.test(l)&&!/,\s*$/.test(l)){
+      const isFn=/\)\s*$/.test(l)&&/^\s*\{/.test(nxt(i));
+      if(!isFn)out.push(['err',i+1,'ডিক্লারেশনের শেষে ; (সেমিকোলন) নেই।']);
+    }
+    let m;
+    if((m=l.match(/\bscanf\s*\(\s*"([^"]*)"\s*,([^;]*)\)/))){
+      const raws=L[i].match(/scanf\s*\(\s*"([^"]*)"\s*,(.*)\)/);
+      const fmts=(raws?raws[1]:'').match(/%[a-z]+/g)||[];const args=(raws?raws[2]:m[2]).split(',').map(x=>x.trim());
+      args.forEach((a,k)=>{if(fmts[k]&&fmts[k]!=='%s'&&a&&!a.startsWith('&'))out.push(['warn',i+1,`scanf-এ "${a}" এর আগে & চিহ্ন দিতে হবে (&${a})।`])});
+    }
+    if(/\b(if|while)\s*\(([^=!<>]|[<>!]=|==)*[^=!<>]=[^=]/.test(l)&&/\b(if|while)\s*\(/.test(l)){
+      const cond=l.replace(/^[^(]*\(/,'');if(/(^|[^=!<>])=($|[^=])/.test(cond))out.push(['warn',i+1,'শর্তে = (অ্যাসাইনমেন্ট) আছে। তুলনার জন্য == ব্যবহার করতে হয়।']);
+    }
+    if((m=L[i].match(/printf\s*\(\s*"((?:\\.|[^"\\])*)"\s*(?:,(.*))?\)\s*;?\s*$/))){
+      const specs=(m[1].replace(/%%/g,'').match(/%[-+0-9.]*[a-zA-Z]/g)||[]).length;
+      const argc=m[2]?m[2].split(',').filter(x=>x.trim()).length:0;
+      if(specs!==argc)out.push(['warn',i+1,`printf-এ ${bn(specs)}টি % চিহ্ন আছে, কিন্তু মান দেওয়া হয়েছে ${bn(argc)}টি।`]);
+    }
+  });
+  const seen=new Set();return out.filter(o=>{const k=o.join('|');if(seen.has(k))return false;seen.add(k);return true}).sort((a,b)=>a[1]-b[1]);
+}
+$('#g-chk').onclick=()=>{
+  const src=$('#g-code').value,o=$('#g-out');
+  if(!src.trim()){o.innerHTML='<div class="err">আগে কিছু কোড লেখো।</div>';return}
+  const r=checkC(src);
+  o.innerHTML=r.length?`<h3 style="margin-top:0">${bn(r.length)}টি সমস্যা পেয়েছি</h3>`+r.map(([k,ln,m])=>`<div class="issue ${k==='warn'?'warn':''}"><b>${ln?'লাইন '+bn(ln):'সাধারণ'}</b><span>${esc(m)}</span></div>`).join('')+'<p class="hint">এটি সাধারণ ভুল ধরার সহজ পরীক্ষা। সব ভুল ধরা না-ও যেতে পারে।</p>'
+    :'<div class="issue warn" style="background:var(--ok-soft)"><b style="color:var(--ok)">ঠিক আছে</b><span>সাধারণ কোনো ভুল পাইনি। এবার "চালাও ও ব্যাখ্যা দাও" চেপে আউটপুট দেখো।</span></div>';
+};
+let gBusy=false;
+$('#g-run').onclick=async()=>{
+  const src=$('#g-code').value.trim(),o=$('#g-out');
+  if(!src){o.innerHTML='<div class="err">আগে কিছু কোড লেখো।</div>';return}
+  if(!sampleFn){o.innerHTML='<div class="err">এআই এই মুহূর্তে চালু নেই। "ত্রুটি খুঁজি" ব্যবহার করতে পারো।</div>';return}
+  if(gBusy)return;gBusy=true;$('#g-run').disabled=true;
+  o.innerHTML='<span class="dots"><i></i><i></i><i></i></span>';
+  const stdin=$('#g-stdin').value.trim();
+  const prompt=`তুমি একজন HSC ICT শিক্ষক এবং C কম্পাইলার। নিচের C কোড চালালে কী হবে তা শিক্ষার্থীকে সহজ বাংলায় দেখাও।
+নিয়ম:
+1. প্রথমে \`\`\`output ব্লকে শুধু প্রোগ্রামের হুবহু আউটপুট দাও (কোনো ব্যাখ্যা ছাড়া)। কোডে কম্পাইল ত্রুটি থাকলে আউটপুটের জায়গায় ত্রুটির বার্তা লেখো।
+2. তারপর "#### লাইন ধরে ব্যাখ্যা" শিরোনামে প্রতিটি গুরুত্বপূর্ণ লাইন কী করছে সহজ বাংলায় লেখো। লুপ বা শর্ত থাকলে ভেরিয়েবলের মান ধাপে ধাপে দেখাও।
+3. ত্রুটি থাকলে "#### ভুল ও সমাধান" শিরোনামে কোথায় ভুল ও কীভাবে ঠিক করতে হবে লেখো এবং সঠিক কোড \`\`\` ব্লকে দাও।
+4. শেষে "#### পাঠ্যবইয়ের সূত্র" শিরোনামে পঞ্চম অধ্যায় (প্রোগ্রামিং ভাষা) থেকে সংশ্লিষ্ট বিষয়ের নাম লেখো। পৃষ্ঠা নম্বর বানাবে না।
+5. কঠিন ইংরেজি শব্দ এড়াও, সুর উৎসাহব্যঞ্জক রাখো। টেবিল ব্যবহার করবে না।
+${stdin?`ইনপুট (stdin): ${stdin}`:'ইনপুট দেওয়া নেই। দরকার হলে সেটা উল্লেখ করো।'}
+
+কোড:
+\`\`\`c
+${src}
+\`\`\``;
+  try{
+    const r=await sampleFn(prompt,{modelTier:'default',cache:false,onText:({text})=>{o.innerHTML=gmd(text)}});
+    o.innerHTML=gmd(r.text);
+  }catch(e){
+    o.innerHTML=`<div class="err">${e&&e.code==='not_granted'?'এআই ব্যবহারের অনুমতি দেওয়া হয়নি। আবার চেষ্টা করলে অনুমতি চাইবে।':e&&e.code==='rate_limited'?'অনেক বেশি অনুরোধ হয়েছে। একটু পরে আবার চেষ্টা করো।':'উত্তর আনা যায়নি। আবার চেষ্টা করো।'}</div>`;
+  }finally{gBusy=false;$('#g-run').disabled=false}
+};
+function gmd(t){ // render ```output block as terminal, others via md()
+  return t.replace(/```output\n([\s\S]*?)(```|$)/g,(m,c)=>`\u0000${btoa(unescape(encodeURIComponent(c.replace(/\n$/,''))))}\u0000`)
+    .split('\u0000').map((seg,i)=>i%2?`<div class="term">${esc(decodeURIComponent(escape(atob(seg))))}</div>`:md(seg)).join('');
+}
+
+/* ================= PAST PAPERS ================= */
+const YEARS=[2023,2024,2025,2026],PKEY='ict-past-v1',LET={'ক':0,'খ':1,'গ':2,'ঘ':3,a:0,b:1,c:2,d:3,'১':0,'২':1,'৩':2,'৪':3,'1':0,'2':1,'3':2,'4':3};
+const BUILTIN={2026:[
+{q:'(১০০)₁₀ গণনা করার জন্য কতটি বাইনারি ডিজিট প্রয়োজন?',o:['৩', '৭', '১২', '১৬'],a:1,e:'(100)₁₀ = (1100100)₂, অর্থাৎ ৭টি বাইনারি ডিজিট লাগে। (ছবিতে খ অপশনটি অস্পষ্ট ছিল, ৭ ধরা হয়েছে।)',ai:true,b:'যমুনা বোর্ড ২০২৬ · সেট গ · প্রশ্ন ১'},
+{q:'(১০০)₂ এবং (AA)₁₆ এর যোগফল কত?',o:['AE', '1B', 'AF', '1AA'],a:0,e:'(100)₂ = 4 এবং (AA)₁₆ = 170, যোগফল 174 = (AE)₁₆।',ai:true,b:'যমুনা বোর্ড ২০২৬ · সেট গ · প্রশ্ন ২'},
+{q:'(A + B)′ · B এর সরলীকৃত মান হলো—',o:['0', '1', 'A', 'A′'],a:0,e:'ডি-মরগ্যান অনুযায়ী (A+B)′ = A′·B′, তাই A′·B′·B = A′·0 = 0।',ai:true,b:'যমুনা বোর্ড ২০২৬ · সেট গ · প্রশ্ন ৩',n:'প্রশ্নে (A + B) এর ওপর বার চিহ্ন আছে, এখানে ′ দিয়ে লেখা হয়েছে।'},
+{q:'উদ্দীপকের লজিক গেইটে আউটপুটে ১ পেতে হলে ইনপুট দিতে হবে— i. A = 0, B = 0, C = 0   ii. A = 0, B = 1, C = 1   iii. A = 1, B = 0, C = 1',o:['i ও ii', 'i ও iii', 'ii ও iii', 'i, ii ও iii'],a:2,e:'F = ((A+B)′ · (B+C)′)′ = (A+B) + (B+C) = A + B + C। i এ F = 0। ii ও iii এ F = 1। তাই ii ও iii।',ai:true,b:'যমুনা বোর্ড ২০২৬ · সেট গ · প্রশ্ন ৪',n:'চিত্রের বর্ণনা (ছবি থেকে): A ও B একটি NOR গেটে যায়। B ও C আরেকটি NOR গেটে যায়। এই দুই NOR গেটের আউটপুট একটি NAND গেটে গিয়ে F হয়েছে।'},
+{q:'উপরের লজিক চিত্রটির জন্য সরলীকৃত মান নিচের কোনটি?',o:['দুটি AND গেটের (A·B ও B·C) আউটপুট একটি OR গেটে গিয়ে F', 'একটি AND গেট, তিন ইনপুটের একটি NOT গেটের মধ্য দিয়ে এসেছে', 'একটি OR গেট, তিন ইনপুটের একটি পরপর দুটি NOT গেটের মধ্য দিয়ে এসেছে', 'একটি NOR গেট, তিন ইনপুটের একটি NOT গেটের মধ্য দিয়ে এসেছে'],a:2,e:'F = A + B + C, অর্থাৎ তিন ইনপুটের OR গেট। গ-তে তৃতীয় ইনপুট পরপর দুটি NOT এর মধ্য দিয়ে গেছে। দুবার উল্টালে মান আগের মতোই (C) থাকে, তাই এটিই মেলে।',ai:true,b:'যমুনা বোর্ড ২০২৬ · সেট গ · প্রশ্ন ৫',n:'৪ নং প্রশ্নের চিত্রটি সরল করলে F = A + B + C হয়। অপশনগুলো ছবিতে লজিক চিত্র আকারে ছিল, এখানে কথায় লেখা হয়েছে।'},
+{q:'HTML ফাইল এডিট করার জন্য টেক্সট এডিটর কোনটি? i. নোটপ্যাড   ii. নোটপ্যাড++   iii. সাবলাইম টেক্সট',o:['i ও ii', 'i ও iii', 'ii ও iii', 'i, ii ও iii'],a:3,e:'তিনটিই টেক্সট এডিটর, এগুলোতে HTML কোড লেখা যায়।',ai:true,b:'যমুনা বোর্ড ২০২৬ · সেট গ · প্রশ্ন ৬'},
+{q:'Result টেবিলের "ID" ফিল্ডটি কোন ধরনের?',o:['প্রাইমারি কি', 'ফরেন কি', 'কম্পোজিট কি', 'ক্যান্ডিডেট কি'],a:1,e:'Result টেবিলের ID, Student টেবিলের ID-কে নির্দেশ করে, তাই এটি ফরেন কি।',ai:true,b:'যমুনা বোর্ড ২০২৬ · সেট গ · প্রশ্ন ৭',n:'টেবিল: Student(ID, Name, City): SO1 Mim Dhaka, SO2 Arif Khulna, SO3 Tinni Sylhet। Result(ID, Sub, Marks): SO1 ICT 85, SO2 ICT 78, SO3 Math 95।'},
+{q:'উদ্দীপকের টেবিল দুটির মধ্যে বিদ্যমান রিলেশনশিপের ধরন কোনটি?',o:['One to one', 'One to many', 'Many to one', 'Many to many'],a:0,e:'দেওয়া ডেটায় প্রতিটি ID দুই টেবিলে একবার করে আছে, তাই One to one ধরা হয়েছে। (এই প্রশ্নের উত্তর বোর্ডের উত্তরমালা থেকে অবশ্যই মিলিয়ে নিয়ো।)',ai:true,b:'যমুনা বোর্ড ২০২৬ · সেট গ · প্রশ্ন ৮',n:'টেবিল: Student(ID, Name, City): SO1 Mim Dhaka, SO2 Arif Khulna, SO3 Tinni Sylhet। Result(ID, Sub, Marks): SO1 ICT 85, SO2 ICT 78, SO3 Math 95।'},
+{q:'মেশিন লার্নিং ব্যবহার করে তৈরিকৃত NLP সফটওয়্যার কোনটি?',o:['Microsoft Azure', 'Microsoft Copilot', 'Microsoft Bard', 'Microsoft Hub'],a:1,e:'Microsoft Copilot একটি AI সহকারী। Bard ছিল গুগলের, Azure হলো ক্লাউড প্ল্যাটফর্ম।',ai:true,b:'যমুনা বোর্ড ২০২৬ · সেট গ · প্রশ্ন ৯'},
+{q:'নিচের কোনটি html ডকুমেন্ট টাইপ ডিক্লারেশনে ব্যবহৃত হয়?',o:['<| DOCTYPE html >', '< DOCTYPE html!>', '<! DOCTYPE html >', '< DOCTYPE html; >'],a:2,e:'সঠিক রূপ <!DOCTYPE html>। শুরুতে ! চিহ্ন বসে। প্রশ্নপত্রের অপশনের ফাঁকা জায়গা ছাপার কারণে।',ai:true,b:'যমুনা বোর্ড ২০২৬ · সেট গ · প্রশ্ন ১০'},
+{q:'শারীরবৃত্তীয় বায়োমেট্রিক পদ্ধতি— i. ফিঙ্গার প্রিন্ট   ii. কি-স্ট্রোক   iii. ডিএনএ পর্যবেক্ষণ',o:['i ও ii', 'i ও iii', 'ii ও iii', 'i, ii ও iii'],a:1,e:'ফিঙ্গার প্রিন্ট ও ডিএনএ শরীরের গঠনগত (শারীরবৃত্তীয়) বৈশিষ্ট্য। কি-স্ট্রোক আচরণগত বৈশিষ্ট্য।',ai:true,b:'যমুনা বোর্ড ২০২৬ · সেট গ · প্রশ্ন ১১'},
+{q:'কম্পিউটার ও মাল্টিমিডিয়া প্রজেক্টরের মধ্যে ডেটা সঞ্চালন মোড কোনটি?',o:['সিমপ্লেক্স', 'হাফ-ডুপ্লেক্স', 'অ্যানিকাস্ট', 'ফুল-ডুপ্লেক্স'],a:0,e:'ডেটা শুধু কম্পিউটার থেকে প্রজেক্টরে যায়, উল্টো দিকে যায় না, তাই সিমপ্লেক্স।',ai:true,b:'যমুনা বোর্ড ২০২৬ · সেট গ · প্রশ্ন ১২'},
+{q:'বিট সিনক্রোনাইজেশন হচ্ছে— i. বিট প্রেরণের সমন্বিত পদ্ধতি   ii. বিটের শুরু এবং শেষ বুঝানো   iii. ব্যান্ডউইথ বৃদ্ধি পাওয়া',o:['i ও ii', 'i ও iii', 'ii ও iii', 'i, ii ও iii'],a:0,e:'বিট সিনক্রোনাইজেশন প্রেরক ও প্রাপকের বিট আদান-প্রদানকে সমন্বিত করে এবং বিটের শুরু-শেষ বোঝায়। এতে ব্যান্ডউইথ বাড়ে না।',ai:true,b:'যমুনা বোর্ড ২০২৬ · সেট গ · প্রশ্ন ১৩'},
+{q:'কোন কমান্ডটি টেবিল থেকে সব ডেটা নেয়ার জন্য ব্যবহৃত হয়?',o:['SELECT ALL', 'SELECT ALL *', 'SELECT *', 'SELECT **'],a:2,e:'SELECT * FROM টেবিলের_নাম; দিয়ে সব কলামের সব ডেটা আসে।',ai:true,b:'যমুনা বোর্ড ২০২৬ · সেট গ · প্রশ্ন ১৪'},
+{q:'Student টেবিল থেকে Class Five এবং Morning Section এর শিক্ষার্থীদের তথ্য পাওয়ার কুয়েরী কোনটি?',o:["Select * From Student Where Class = 5 OR Section = 'morning';", "Select * From Student Where Class = 5 AND Section = 'morning';", "Select * From Student Where Class = '5' OR Section = morning;", "Select * From Student Where Class = '5' AND Section = morning;"],a:1,e:"দুটি শর্তই একসঙ্গে সত্য হতে হবে, তাই AND। সংখ্যা 5 কোটেশন ছাড়া এবং টেক্সট 'morning' কোটেশনসহ লিখতে হয়।",ai:true,b:'যমুনা বোর্ড ২০২৬ · সেট গ · প্রশ্ন ১৫'},
+{q:'এই ধরনের নেটওয়ার্কে মোট তারের সংখ্যা হবে—',o:['n', 'n(n−1)/2', '(n−1)', '(n−1)/2'],a:1,e:'প্রতিটি নোড অন্য সবার সঙ্গে যুক্ত থাকলে (মেশ টপোলজি) মোট সংযোগ n(n−1)/2।',ai:true,b:'যমুনা বোর্ড ২০২৬ · সেট গ · প্রশ্ন ১৬',n:'চিত্রের বর্ণনা (ছবি থেকে পড়া): কয়েকটি নোড, প্রতিটি অন্য সব নোডের সঙ্গে সরাসরি যুক্ত। এটি মেশ টপোলজি।'},
+{q:'উল্লিখিত টপোলজির সুবিধাগুলো— i. শক্তিশালী কাঠামো   ii. নেটওয়ার্ক ইনস্টলেশন ও কনফিগারেশন সহজ   iii. একটি লিংক নষ্ট হলেও ডেটা আদান প্রদান সম্ভব',o:['i ও ii', 'i ও iii', 'ii ও iii', 'i, ii ও iii'],a:1,e:'মেশ টপোলজি শক্তিশালী এবং একটি লিংক নষ্ট হলেও বিকল্প পথ থাকে। তবে এর ইনস্টলেশন জটিল ও ব্যয়বহুল, তাই ii ভুল।',ai:true,b:'যমুনা বোর্ড ২০২৬ · সেট গ · প্রশ্ন ১৭',n:'এখানে "উল্লিখিত টপোলজি" মানে ১৬ নং প্রশ্নের চিত্রের মেশ টপোলজি।'},
+{q:'ন্যানোটেকনোলজির কোন পদ্ধতিতে ক্ষুদ্র পরমাণু থেকে বড় কাঠামো তৈরি করা হয়?',o:['টপ-ডাউন', 'টপ-আপ', 'বটম-ডাউন', 'বটম-আপ'],a:3,e:'ছোট পরমাণু বা অণু জুড়ে বড় কাঠামো গড়ার পদ্ধতিকে বটম-আপ বলে। টপ-ডাউনে বড় বস্তু কেটে ছোট করা হয়।',ai:true,b:'যমুনা বোর্ড ২০২৬ · সেট গ · প্রশ্ন ১৮'},
+{q:'নেটওয়ার্কটি কোন টপোলজিতে ছিল?',o:['বাস', 'স্টার', 'রিং', 'মেশ'],a:1,e:'কেন্দ্রীয় ডিভাইস (হাব) থেকে ডেটা সব কম্পিউটারে যায়। এটি হাবভিত্তিক স্টার টপোলজি।',ai:true,b:'যমুনা বোর্ড ২০২৬ · সেট গ · প্রশ্ন ১৯',n:'উদ্দীপক: একটি অফিসে ১০টি কম্পিউটার এমন একটি কেন্দ্রীয় ডিভাইসের মাধ্যমে সংযুক্ত, যা নেটওয়ার্কে ডেটা পাঠালে সব কম্পিউটারে যায়। এ কারণে কেন্দ্রীয় ডিভাইসটি পরিবর্তন করা হলো।'},
+{q:'ডিভাইস পরিবর্তনের ফলে নেটওয়ার্কটির কাঠামোতে কী প্রভাব পড়বে? i. লজিক্যাল টপোলজি বা ডেটা প্রবাহের উন্নতি হবে   ii. ফিজিক্যাল বা গাঠনিক টপোলজি বদলে যাবে   iii. নেটওয়ার্ক পারফরম্যান্স বৃদ্ধি পাবে',o:['i ও ii', 'i ও iii', 'ii ও iii', 'i, ii ও iii'],a:1,e:'হাবের জায়গায় সুইচ বসালে ডেটা শুধু গন্তব্যে যায়, তাই ডেটা প্রবাহ ও পারফরম্যান্স ভালো হয়। তারের গঠন স্টারই থাকে, ফিজিক্যাল টপোলজি বদলায় না।',ai:true,b:'যমুনা বোর্ড ২০২৬ · সেট গ · প্রশ্ন ২০',n:'উদ্দীপক: একটি অফিসে ১০টি কম্পিউটার এমন একটি কেন্দ্রীয় ডিভাইসের মাধ্যমে সংযুক্ত, যা নেটওয়ার্কে ডেটা পাঠালে সব কম্পিউটারে যায়। এ কারণে কেন্দ্রীয় ডিভাইসটি পরিবর্তন করা হলো।'},
+{q:'সি-ভাষায় উপাত্ত গ্রহণের কমান্ড কোনটি?',o:['main ( )', 'printf ( )', 'scanf ( )', 'getch ( )'],a:2,e:'scanf() কিবোর্ড থেকে ডেটা নেয়। printf() ডেটা দেখায়।',ai:true,b:'যমুনা বোর্ড ২০২৬ · সেট গ · প্রশ্ন ২১'},
+{q:'Apple লেখাটি কতবার প্রদর্শিত হবে?',o:['২', '৩', '৪', '৫'],a:2,e:'C = 15, 17, 19, 21 এ Apple ছাপা হয়। 21 এ ছাপার পর break হয়ে লুপ থামে, মোট ৪ বার।',ai:true,b:'যমুনা বোর্ড ২০২৬ · সেট গ · প্রশ্ন ২২',n:'উদ্দীপক কোড: for (C = 15; C <= 25; C = C + 2) { printf("Apple"); if (C == 21) break; }'},
+{q:'if শর্ত বাদ দিলে Apple লেখাটি কতবার প্রদর্শিত হবে?',o:['৪', '৫', '৬', '৭'],a:2,e:'C = 15, 17, 19, 21, 23, 25 এ লুপ চলে, মোট ৬ বার। (ছবিতে ঘ অপশনটি অস্পষ্ট ছিল।)',ai:true,b:'যমুনা বোর্ড ২০২৬ · সেট গ · প্রশ্ন ২৩',n:'উদ্দীপক কোড: for (C = 15; C <= 25; C = C + 2) { printf("Apple"); if (C == 21) break; }'},
+{q:'একটি প্রোগ্রামে int a[5] = {10, 20, 30, 40, 50}; থাকলে— i. a[0] এর মান 10   ii. a[2] এর মান 30   iii. a[5] এর মান 50',o:['i ও ii', 'i ও iii', 'ii ও iii', 'i, ii ও iii'],a:0,e:'সূচক 0 থেকে শুরু। a[0]=10, a[2]=30, কিন্তু a[4]=50। a[5] অ্যারের বাইরে।',ai:true,b:'যমুনা বোর্ড ২০২৬ · সেট গ · প্রশ্ন ২৪'},
+{q:'সি-প্রোগ্রামের ক্ষেত্রে লজিক্যাল অপারেটর কোনটি?',o:['&&', '<=', '!=', '=='],a:0,e:'&& (AND), || (OR), ! (NOT) লজিক্যাল অপারেটর। <=, != ও == রিলেশনাল অপারেটর।',ai:true,b:'যমুনা বোর্ড ২০২৬ · সেট গ · প্রশ্ন ২৫'}
+]};
+let REMOTE=null;
+const allOf=y=>((REMOTE?REMOTE[y]:BUILTIN[y])||[]).map(x=>({...x,builtin:true})).concat(pLoad()[y]||[]);
+let yr=2026,yAI=false;
+const pLoad=()=>{try{return JSON.parse(store.get(PKEY)||'{}')}catch(e){return{}}};
+const pSave=d=>store.set(PKEY,JSON.stringify(d));
+function parseQs(txt){
+  const ok=[],bad=[];
+  txt.replace(/\r/g,'').split(/\n\s*\n+/).map(b=>b.trim()).filter(Boolean).forEach((b,bi)=>{
+    const q=[],o=[];let a=-1,m;
+    b.split('\n').map(x=>x.trim()).filter(Boolean).forEach(l=>{
+      if((m=l.match(/^(?:উত্তর|উঃ|Ans(?:wer)?)\s*[:：\-]?\s*\(?\s*([কখগঘa-dA-D১২৩৪1-4])/i)))a=LET[m[1].toLowerCase()];
+      else if(l.match(/^\(?[কখগঘ]\)|^\(?[কখগঘ]\./)||l.match(/^\(?[a-dA-D][\)\.]\s/)){
+        // one line may hold several options: ক) .. খ) .. গ) ..
+        const parts=l.split(/(?:^|\s+)\(?(?=[কখগঘ][\)\.]|[a-dA-D][\)\.]\s)/).filter(Boolean);
+        parts.forEach(pt=>{const mm=pt.match(/^\(?([কখগঘa-dA-D])[\)\.]\s*(.*)$/);if(mm&&mm[2].trim())o[LET[mm[1].toLowerCase()]]=mm[2].trim()});
+      }else if(!o.length)q.push(l);
+    });
+    const qt=q.join(' ').replace(/^\s*[\d০-৯]+\s*[\.\)।]\s*/,'').trim();
+    if(qt&&o.length===4&&o.every(Boolean)&&a>=0&&a<4)ok.push({q:qt,o,a});
+    else bad.push(bi+1);
+  });
+  return{ok,bad};
+}
+function yRender(){
+  const d=pLoad(),list=allOf(yr),nb=(BUILTIN[yr]||[]).length;
+  $('#y-chips').innerHTML='';
+  YEARS.forEach(y=>{const n=allOf(y).length;const b=document.createElement('button');b.type='button';b.className='pill'+(y===yr?' on':'');b.textContent=bn(y);b.onclick=()=>{yr=y;yRender()};$('#y-chips').append(b)});
+    $('#y-start').hidden=!list.length;
+  const L=$('#y-list');
+  if(!list.length){L.innerHTML=`<p class="hint">${bn(yr)} সালের প্রশ্ন এখনো নেই।</p>`;return}
+  L.innerHTML=list.map((x,i)=>`<div class="expl" style="margin:10px 0"><div class="row" style="justify-content:space-between;align-items:flex-start;flex-wrap:nowrap"><b style="min-width:0">${bn(i+1)}। ${esc(x.q)}</b>${x.builtin?'':`<button class="chip" data-del="${i-nb}" type="button" style="flex:none">মোছো</button>`}</div>
+    ${x.n?`<div class="hint" style="margin:4px 0">${esc(x.n)}</div>`:''}${x.o.map((t,k)=>`<div style="${k===x.a?'color:var(--ok);font-weight:600':''}">${'কখগঘ'[k]}) ${esc(t)}${k===x.a?' ✓':''}</div>`).join('')}${x.b?`<div class="hint">${esc(x.b)}</div>`:''}${x.ai?'<div class="hint">উত্তর এআই ঠিক করেছে, মিলিয়ে নিয়ো</div>':''}${x.e&&x.builtin?`<div class="hint">${esc(x.e)}</div>`:''}</div>`).join('');
+}
+$('#y-list').addEventListener('click',e=>{
+  const b=e.target.closest('[data-del]');if(!b)return;
+  if(!b.dataset.sure){b.dataset.sure='1';b.textContent='নিশ্চিত?';setTimeout(()=>{if(b.isConnected){delete b.dataset.sure;b.textContent='মোছো'}},3000);return}
+  const d=pLoad();(d[yr]||[]).splice(+b.dataset.del,1);pSave(d);yRender();
+});
+$('#y-start').onclick=()=>{const l=allOf(yr);if(l.length)startCustom(l,`বিগত সালের প্রশ্ন ${bn(yr)}`)};
+yRender();
+(async()=>{ // Supabase: past questions (read-only, public)
+  const c=window.APP_CONFIG||{};if(!c.SUPABASE_URL||!c.SUPABASE_ANON_KEY)return;
+  try{
+    const r=await fetch(`${c.SUPABASE_URL}/rest/v1/past_questions?select=*&order=year.asc,qno.asc`,{headers:{apikey:c.SUPABASE_ANON_KEY,Authorization:'Bearer '+c.SUPABASE_ANON_KEY}});
+    if(!r.ok)return;const rows=await r.json();if(!Array.isArray(rows)||!rows.length)return;
+    REMOTE={};rows.forEach(x=>{(REMOTE[x.year]=REMOTE[x.year]||[]).push({q:x.question,o:x.options,a:x.answer,e:x.explanation||'',n:x.note||undefined,ai:!!x.ai_answer,b:`${x.board} · প্রশ্ন ${bn(x.qno)}`})});
+    yRender();
+  }catch(e){}
+})();
+
+/* ---------- boot ---------- */
+convert();complement();codes();qStart();welcome();
+show(location.hash.slice(1)||'solve');
+</script>
+</body>
+</html>

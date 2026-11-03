@@ -1,0 +1,7 @@
+{
+  "name": "hsc-ict-sohayok",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HSC ICT সহায়ক: বাংলায় সমাধান, কনভার্টার, ল্যাব, কুইজ",
+  "engines": { "node": ">=18" }
+}

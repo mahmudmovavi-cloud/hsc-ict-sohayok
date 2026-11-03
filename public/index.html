@@ -38,9 +38,9 @@
   --ok:#5fd68a;--ok-soft:#173a26;--bad:#ff8590;--bad-soft:#40181d;--code-bg:#08110d;--code-ink:#cdeedd;--bg-pattern:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22290%22 height=%22290%22 viewBox=%220 0 290 290%22%3E%3Cg fill=%22none%22 stroke=%22%2346c99c%22 stroke-opacity=%220.13%22 stroke-width=%221.5%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cg transform=%22translate(18 22) rotate(-8 12 12) scale(1.5)%22%3E%3Crect x=%222%22 y=%223%22 width=%2220%22 height=%2214%22 rx=%222%22/%3E%3Cpath d=%22M8 21h8M12 17v4%22/%3E%3C/g%3E%3Cg transform=%22translate(150 14) rotate(10 12 12) scale(1.4)%22%3E%3Crect x=%224%22 y=%224%22 width=%2216%22 height=%2216%22 rx=%222%22/%3E%3Crect x=%229%22 y=%229%22 width=%226%22 height=%226%22/%3E%3Cpath d=%22M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3%22/%3E%3C/g%3E%3Cg transform=%22translate(92 92) rotate(0 12 12) scale(1.3)%22%3E%3Cpath d=%22M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0%22/%3E%3Ccircle cx=%2212%22 cy=%2220%22 r=%221%22/%3E%3C/g%3E%3Cg transform=%22translate(214 84) rotate(-6 12 12) scale(1.5)%22%3E%3Cpath d=%22M16 18l6-6-6-6M8 6l-6 6 6 6%22/%3E%3C/g%3E%3Cg transform=%22translate(20 150) rotate(6 12 12) scale(1.4)%22%3E%3Cellipse cx=%2212%22 cy=%225%22 rx=%229%22 ry=%223%22/%3E%3Cpath d=%22M21 12c0 1.66-4 3-9 3s-9-1.34-9-3M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5%22/%3E%3C/g%3E%3Cg transform=%22translate(140 160) rotate(-10 12 12) scale(1.5)%22%3E%3Cpath d=%22M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z%22/%3E%3C/g%3E%3Cg transform=%22translate(230 176) rotate(12 12 12) scale(1.3)%22%3E%3Crect x=%225%22 y=%222%22 width=%2214%22 height=%2220%22 rx=%222%22/%3E%3Cpath d=%22M12 18h.01%22/%3E%3C/g%3E%3Cg transform=%22translate(80 214) rotate(4 12 12) scale(1.4)%22%3E%3Cpath d=%22M4 17l6-6-6-6M12 19h8%22/%3E%3C/g%3E%3Cg transform=%22translate(190 230) rotate(0 12 12) scale(1.2)%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%2210%22/%3E%3Cpath d=%22M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z%22/%3E%3C/g%3E%3Cg transform=%22translate(12 236) rotate(-4 12 12) scale(1.0)%22%3E%3Crect x=%222%22 y=%222%22 width=%2220%22 height=%228%22 rx=%222%22/%3E%3Crect x=%222%22 y=%2214%22 width=%2220%22 height=%228%22 rx=%222%22/%3E%3Cpath d=%22M6 6h.01M6 18h.01%22/%3E%3C/g%3E%3Cg transform=%22translate(250 18) rotate(8 12 12) scale(1.0)%22%3E%3Crect x=%223%22 y=%2211%22 width=%2218%22 height=%2211%22 rx=%222%22/%3E%3Cpath d=%22M7 11V7a5 5 0 0 1 10 0v4%22/%3E%3C/g%3E%3Cg transform=%22translate(112 12) rotate(0 12 12) scale(0.9)%22%3E%3Cpath d=%22M4 4h4v6H4zM12 4v6M16 4h4v6h-4zM4 14v6M10 14h4v6h-4zM18 14v6%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");color-scheme:dark}
 
 *{box-sizing:border-box}
-body{background-color:var(--bg);background-image:var(--bg-pattern);background-size:290px 290px;color:var(--ink);font:400 16px/1.7 var(--f-body);
+body{background-color:var(--bg);background-image:var(--bg-pattern);background-size:290px 290px;color:var(--ink);font:400 17px/1.7 var(--f-body);
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
-.wrap{max-width:1080px;margin:0 auto}
+.wrap{max-width:1360px;margin:0 auto}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
 header.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--bg);padding:14px 0 10px;border-bottom:1px solid var(--line);margin-bottom:20px}
 .brand{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
@@ -112,12 +112,12 @@ table.ref-t td:first-child{font-family:var(--f-mono);color:var(--brand);font-wei
 @media(min-width:900px){.hero-t{max-width:42%}.hero-art{left:auto;right:12px;height:84%;top:8%}}
 header.bar{margin-top:0;padding-top:10px}
 /* chat */
-.chat{max-width:780px;margin:0 auto}
+.chat{max-width:1060px;margin:0 auto}
 .chat-head select{flex:1 1 220px}
 .chat-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
 .m{display:flex;gap:10px;margin:16px 0;align-items:flex-start}
 .m.user{justify-content:flex-end}
-.bub{max-width:min(100%,660px);min-width:0;padding:10px 15px;border-radius:18px;overflow-wrap:anywhere}
+.bub{max-width:min(100%,880px);min-width:0;padding:10px 15px;border-radius:18px;overflow-wrap:anywhere}
 .m.user .bub{background:var(--brand);color:var(--brand-ink);border-bottom-right-radius:5px}
 .m.ai .bub{background:var(--surface);border:1px solid var(--line);border-top-left-radius:5px;flex:0 1 auto}
 .m.ai .col{min-width:0;display:flex;flex-direction:column;gap:8px;align-items:flex-start;max-width:100%}
@@ -129,7 +129,7 @@ header.bar{margin-top:0;padding-top:10px}
 .composer{position:sticky;bottom:0;background:var(--bg);padding:10px 0 6px;z-index:5}
 .cbox{display:flex;align-items:flex-end;gap:6px;background:var(--surface);border:1.5px solid var(--line);border-radius:26px;padding:6px}
 .cbox:focus-within{border-color:var(--brand)}
-.cbox textarea{border:0;background:transparent;min-height:0;height:44px;max-height:150px;padding:10px 6px;resize:none;flex:1;border-radius:0}
+.cbox textarea{border:0;background:transparent;min-height:0;height:48px;font-size:17px;max-height:150px;padding:10px 6px;resize:none;flex:1;border-radius:0}
 .cbox textarea:focus{outline:none}
 .icb{width:42px;height:42px;border-radius:50%;border:0;cursor:pointer;display:grid;place-items:center;flex:none}
 .icb.att{background:var(--surface-2);color:var(--ink-2)}
@@ -329,7 +329,7 @@ header.bar{margin-top:0;padding-top:10px}
 
 <!-- ============ PAST PAPERS ============ -->
 <section id="p-past" hidden>
-  <div class="card" style="max-width:860px;margin:0 auto">
+  <div class="card" style="max-width:1060px;margin:0 auto">
     <h2>বিগত সালের প্রশ্ন</h2>
     <p class="sub">HSC ICT বহুনির্বাচনি প্রশ্ন, বছর ধরে ধরে। বছর বেছে নিয়ে পরীক্ষা দাও।</p>
     <div class="chips" id="y-chips" style="margin:0 0 12px"></div>
@@ -343,7 +343,7 @@ header.bar{margin-top:0;padding-top:10px}
 
 <!-- ============ QUIZ ============ -->
 <section id="p-quiz" hidden>
-  <div class="card" style="max-width:760px;margin:0 auto">
+  <div class="card" style="max-width:1000px;margin:0 auto">
     <div class="qtop"><h2 style="margin:0">MCQ কুইজ</h2><span class="hint" id="q-best"></span></div>
     <div class="chips" id="q-ch" style="margin:6px 0 14px"></div>
     <div id="q-body"></div>
@@ -890,7 +890,7 @@ $('#c-file').onchange=async e=>{const f=e.target.files[0];if(!f)return;
   imgBlob=await shrink(f);$('#c-thumb').src=URL.createObjectURL(imgBlob);$('#c-prev').hidden=false;e.target.value=''};
 $('#c-rm').onclick=()=>{imgBlob=null;$('#c-prev').hidden=true};
 const inp=$('#c-in');
-inp.addEventListener('input',()=>{inp.style.height='44px';inp.style.height=Math.min(inp.scrollHeight,150)+'px'});
+inp.addEventListener('input',()=>{inp.style.height='48px';inp.style.height=Math.min(inp.scrollHeight,150)+'px'});
 inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();send(inp.value)}});
 $('#c-send').onclick=()=>send(inp.value);
 $('#c-new').onclick=()=>{if(!busy){welcome()}};
@@ -907,7 +907,7 @@ async function send(text){
   $$('[data-act]').forEach(x=>x.remove());
   let uh='';if(blob)uh+=`<img class="thumb" src="${URL.createObjectURL(blob)}" alt="আপলোড করা ছবি">`;
   if(text)uh+=`<div>${esc(text).replace(/\n/g,'<br>')}</div>`;
-  addUser(uh);inp.value='';inp.style.height='44px';imgBlob=null;$('#c-prev').hidden=true;
+  addUser(uh);inp.value='';inp.style.height='48px';imgBlob=null;$('#c-prev').hidden=true;
   const turn=(ch?`[অধ্যায়: ${CH[ch-1]}]\n`:'')+(blob?'[সঙ্গে একটি ছবি দেওয়া আছে, ছবির প্রশ্নটি সমাধান করো]\n':'')+(text||'(ছবির প্রশ্ন)');
   const ai=addAI('<span class="dots"><i></i><i></i><i></i></span>'),bub=ai.querySelector('.bub'),col=ai.querySelector('.col');
   if(!sampleFn){bub.innerHTML='<div class="err">এআই এই মুহূর্তে চালু নেই। তবে কনভার্টার, HTML ল্যাব ও কুইজ ঠিকঠাক কাজ করবে।</div>';return}

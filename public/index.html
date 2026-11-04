@@ -152,6 +152,27 @@ header.bar{margin-top:0;padding-top:10px}
 .issue.warn{background:var(--surface-2)}
 .issue b{flex:none;color:var(--bad)}
 .issue.warn b{color:var(--brand)}
+
+/* sql lab */
+.sql-ed{min-height:150px}
+.sql-live{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink-2)}
+.sql-live input{width:18px;height:18px;accent-color:var(--brand)}
+.sql-res .rs{margin:10px 0}
+.sql-res .rs .q-t{font:12px var(--f-mono);color:var(--ink-2);overflow-wrap:anywhere;margin-bottom:2px}
+.sql-res td{text-align:left}
+.sql-res td.n{text-align:right}
+.sql-res .null{color:var(--ink-2);font-style:italic}
+.msg-ok{background:var(--brand-soft);color:var(--ink);padding:10px 14px;border-radius:10px;font-weight:500}
+.sql-tabs td,.sql-tabs th{padding:3px 9px;font-size:13px}
+.sql-tabs .tn{font:700 15px var(--f-mono);color:var(--brand);margin:10px 0 2px}
+.ch-list{display:grid;gap:8px;margin:8px 0}
+.ch{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--bg)}
+.ch.done{border-color:var(--brand);background:var(--brand-soft)}
+.ch .ct{font-weight:600}
+.ch .cb{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.ch .cb button{padding:5px 12px;font-size:14px}
+.ch .fb{margin-top:8px;font-size:14px}
+.ch pre{margin:6px 0 0;background:var(--code-bg);color:var(--code-ink);padding:8px 10px;border-radius:8px;font:13px var(--f-mono);white-space:pre-wrap;overflow-wrap:anywhere}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
@@ -188,6 +209,7 @@ header.bar{margin-top:0;padding-top:10px}
     <button class="pill" role="tab" data-tab="convert">সংখ্যা কনভার্টার</button>
     <button class="pill" role="tab" data-tab="html">HTML ল্যাব</button>
     <button class="pill" role="tab" data-tab="prog">প্রোগ্রামিং ল্যাব</button>
+    <button class="pill" role="tab" data-tab="sql">SQL ল্যাব</button>
     <button class="pill" role="tab" data-tab="past">বিগত সালের প্রশ্ন</button>
       </nav>
   <button class="exam" role="tab" data-tab="quiz" type="button">Start Exam</button>
@@ -327,6 +349,45 @@ header.bar{margin-top:0;padding-top:10px}
   </div>
 </section>
 
+
+<!-- ============ SQL LAB ============ -->
+<section id="p-sql" hidden>
+  <div class="grid two">
+    <div>
+      <div class="card">
+        <h2>SQL ল্যাব</h2>
+        <p class="sub">নিচে SQL লেখো, সাথে সাথে ফলাফল দেখো। ডেটা নষ্ট হলেও চিন্তা নেই, "ডেটাবেজ রিসেট" চাপলেই আগের অবস্থায় ফিরবে।</p>
+        <div class="chips" id="s-ex" style="margin:0 0 10px"></div>
+        <label class="l" for="s-code">তোমার SQL</label>
+        <textarea id="s-code" class="code-in sql-ed" spellcheck="false" autocapitalize="off" autocorrect="off">SELECT * FROM student;</textarea>
+        <div class="row" style="margin-top:12px">
+          <button class="btn" id="s-run" type="button">চালাও ▶</button>
+          <button class="btn ghost" id="s-reset" type="button">ডেটাবেজ রিসেট</button>
+          <label class="sql-live"><input type="checkbox" id="s-live" checked> লাইভ ফলাফল (লিখতে লিখতে SELECT চলবে)</label>
+        </div>
+        <p class="hint" style="margin-bottom:0">Ctrl+Enter চাপলেও চলবে। একাধিক কমান্ড ; দিয়ে আলাদা করো। INSERT, UPDATE, DELETE, CREATE TABLE সবই চলে।</p>
+      </div>
+      <div class="card sql-res" style="margin-top:20px" aria-live="polite">
+        <h2>ফলাফল</h2>
+        <div id="s-out"></div>
+        <p class="hint" style="margin-bottom:0">এনসিটিবি বই: ষষ্ঠ অধ্যায় — ডেটাবেজ ম্যানেজমেন্ট সিস্টেম (SQL)</p>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <h2>অনুশীলনী</h2>
+        <p class="sub">প্রশ্ন পড়ে নিজে SQL লেখো, তারপর "পরীক্ষা করো" চাপো।</p>
+        <div class="hint" id="c-prog" style="margin-bottom:6px"></div>
+        <div class="ch-list" id="c-list"></div>
+      </div>
+      <div class="card sql-tabs" style="margin-top:20px">
+        <h2>টেবিল ও ডেটা</h2>
+        <div id="s-tabs"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ============ PAST PAPERS ============ -->
 <section id="p-past" hidden>
   <div class="card" style="max-width:1060px;margin:0 auto">
@@ -371,7 +432,7 @@ const CH=[
 const CHN=['ICT: বিশ্ব ও বাংলাদেশ','কমিউনিকেশন ও নেটওয়ার্কিং','সংখ্যা পদ্ধতি ও ডিজিটাল ডিভাইস','ওয়েব ডিজাইন ও HTML','প্রোগ্রামিং ভাষা','ডেটাবেজ ম্যানেজমেন্ট সিস্টেম'];
 
 /* ---------- tabs / routing ---------- */
-const TABS=['solve','convert','html','prog','past','quiz'];
+const TABS=['solve','convert','html','prog','sql','past','quiz'];
 function show(t){
   if(!TABS.includes(t))t='solve';
   TABS.forEach(x=>$('#p-'+x).hidden=x!==t);
@@ -1030,6 +1091,502 @@ function gmd(t){ // render ```output block as terminal, others via md()
   return t.replace(/```output\n([\s\S]*?)(```|$)/g,(m,c)=>`\u0000${btoa(unescape(encodeURIComponent(c.replace(/\n$/,''))))}\u0000`)
     .split('\u0000').map((seg,i)=>i%2?`<div class="term">${esc(decodeURIComponent(escape(atob(seg))))}</div>`:md(seg)).join('');
 }
+
+
+/* ================= SQL LAB ================= */
+const SQLE=(()=>{
+const E=m=>({sqlErr:true,msg:m});
+const RES=new Set(['FROM','WHERE','GROUP','HAVING','ORDER','LIMIT','OFFSET','JOIN','INNER','LEFT','CROSS','ON','AND','OR','AS','SET','VALUES','NOT','LIKE','IN','BETWEEN','IS','NULL','BY','ASC','DESC','SELECT','DISTINCT','INTO','TABLE','PRIMARY','KEY']);
+const AGG=new Set(['COUNT','SUM','AVG','MIN','MAX']);
+function lex(src){
+  const t=[];let i=0;
+  while(i<src.length){
+    const c=src[i];
+    if(/\s/.test(c)){i++;continue}
+    if(c==='-'&&src[i+1]==='-'){while(i<src.length&&src[i]!=='\n')i++;continue}
+    if(c==="'"){let j=i+1,s='',closed=false;
+      while(j<src.length){if(src[j]==="'"){if(src[j+1]==="'"){s+="'";j+=2;continue}closed=true;break}s+=src[j++]}
+      if(!closed)throw E("টেক্সট মান বন্ধ করা হয়নি। টেক্সট একক উদ্ধৃতি ' ' এর ভেতরে লিখতে হয়, শেষে আবার ' দিতে হবে।");
+      t.push({k:'str',v:s,s:i,e:j+1});i=j+1;continue}
+    if(c==='"'||c==='`'){const j=src.indexOf(c,i+1);if(j<0)throw E('নামের উদ্ধৃতি বন্ধ করা হয়নি।');t.push({k:'id',v:src.slice(i+1,j),s:i,e:j+1});i=j+1;continue}
+    let m;
+    if((m=/^\d+(\.\d+)?/.exec(src.slice(i)))||(c==='.'&&(m=/^\.\d+/.exec(src.slice(i))))){t.push({k:'num',v:parseFloat(m[0]),s:i,e:i+m[0].length});i+=m[0].length;continue}
+    if((m=/^[A-Za-z_\u0980-\u09FF][A-Za-z0-9_\u0980-\u09FF]*/.exec(src.slice(i)))){t.push({k:'w',v:m[0],u:m[0].toUpperCase(),s:i,e:i+m[0].length});i+=m[0].length;continue}
+    const two=src.slice(i,i+2);
+    if(['<=','>=','<>','!='].includes(two)){t.push({k:'sym',v:two==='!='?'<>':two,s:i,e:i+2});i+=2;continue}
+    if('(),;*.=<>+-/%'.includes(c)){t.push({k:'sym',v:c,s:i,e:i+1});i++;continue}
+    throw E(`"${c}" চিহ্নটি SQL-এ ব্যবহার করা যায় না।`);
+  }
+  return t;
+}
+class P{
+  constructor(src){this.src=src;this.t=lex(src);this.i=0}
+  peek(o=0){return this.t[this.i+o]}
+  raw(x){return x?this.src.slice(x.s,x.e):''}
+  kw(u,o=0){const x=this.peek(o);return !!x&&x.k==='w'&&x.u===u}
+  acceptKw(u){if(this.kw(u)){this.i++;return true}return false}
+  expectKw(u,hint){if(!this.acceptKw(u))this.fail(hint||`"${u}"`)}
+  sym(c,o=0){const x=this.peek(o);return !!x&&x.k==='sym'&&x.v===c}
+  acceptSym(c){if(this.sym(c)){this.i++;return true}return false}
+  expectSym(c){if(!this.acceptSym(c))this.fail(`"${c}"`)}
+  fail(exp){const x=this.peek();
+    throw E(x?`"${this.raw(x)}" এর কাছে বাক্যগঠনে ভুল আছে। এখানে ${exp} লেখা দরকার ছিল।`:`বাক্যটি অসম্পূর্ণ। শেষে ${exp} লেখা দরকার ছিল।`)}
+  ident(what){const x=this.peek();
+    if(x&&(x.k==='id'||(x.k==='w'&&!RES.has(x.u)))){this.i++;return x.v}
+    this.fail(what||'একটি নাম')}
+  // ---------- expressions
+  expr(){return this.pOr()}
+  pOr(){let l=this.pAnd();while(this.acceptKw('OR'))l={t:'bin',op:'OR',l,r:this.pAnd()};return l}
+  pAnd(){let l=this.pNot();while(this.acceptKw('AND'))l={t:'bin',op:'AND',l,r:this.pNot()};return l}
+  pNot(){if(this.acceptKw('NOT'))return{t:'not',e:this.pNot()};return this.pCmp()}
+  pCmp(){
+    let l=this.pAdd();
+    for(;;){
+      const x=this.peek();
+      if(x&&x.k==='sym'&&['=','<>','<','>','<=','>='].includes(x.v)){this.i++;l={t:'bin',op:x.v,l,r:this.pAdd()};continue}
+      let neg=false,save=this.i;
+      if(this.kw('NOT')&&(this.kw('LIKE',1)||this.kw('IN',1)||this.kw('BETWEEN',1))){this.i++;neg=true}
+      if(this.acceptKw('LIKE')){l={t:'like',e:l,p:this.pAdd(),neg};continue}
+      if(this.acceptKw('IN')){this.expectSym('(');const list=[this.expr()];while(this.acceptSym(','))list.push(this.expr());this.expectSym(')');l={t:'in',e:l,list,neg};continue}
+      if(this.acceptKw('BETWEEN')){const a=this.pAdd();this.expectKw('AND','AND (যেমন BETWEEN 10 AND 20)');const b=this.pAdd();l={t:'between',e:l,a,b,neg};continue}
+      if(this.acceptKw('IS')){const n=this.acceptKw('NOT');this.expectKw('NULL','NULL');l={t:'isnull',e:l,neg:n};continue}
+      this.i=save;break;
+    }
+    return l;
+  }
+  pAdd(){let l=this.pMul();for(;;){const x=this.peek();if(x&&x.k==='sym'&&(x.v==='+'||x.v==='-')){this.i++;l={t:'bin',op:x.v,l,r:this.pMul()}}else break}return l}
+  pMul(){let l=this.pUn();for(;;){const x=this.peek();if(x&&x.k==='sym'&&(x.v==='*'||x.v==='/'||x.v==='%')){this.i++;l={t:'bin',op:x.v,l,r:this.pUn()}}else break}return l}
+  pUn(){if(this.acceptSym('-'))return{t:'neg',e:this.pUn()};if(this.acceptSym('+'))return this.pUn();return this.pPrim()}
+  pPrim(){
+    const x=this.peek();
+    if(!x)this.fail('একটি মান বা কলামের নাম');
+    if(x.k==='num'){this.i++;return{t:'lit',v:x.v}}
+    if(x.k==='str'){this.i++;return{t:'lit',v:x.v}}
+    if(this.acceptSym('(')){const e=this.expr();this.expectSym(')');return e}
+    if(x.k==='w'&&x.u==='NULL'){this.i++;return{t:'lit',v:null}}
+    if(x.k==='w'&&this.sym('(',1)&&!RES.has(x.u)){
+      this.i+=2;const name=x.u;
+      if(name==='COUNT'&&this.acceptSym('*')){this.expectSym(')');return{t:'fn',name,star:true,args:[]}}
+      const d=this.acceptKw('DISTINCT');const args=[];
+      if(!this.sym(')')){args.push(this.expr());while(this.acceptSym(','))args.push(this.expr())}
+      this.expectSym(')');
+      return{t:'fn',name,args,distinct:d};
+    }
+    if(x.k==='id'||(x.k==='w'&&!RES.has(x.u))){
+      this.i++;
+      if(this.sym('.')&&this.peek(1)&&this.peek(1).k!=='sym'){this.i++;const n=this.peek();this.i++;return{t:'col',tbl:x.v,name:n.v}}
+      return{t:'col',name:x.v,raw:this.raw(x)};
+    }
+    this.fail('একটি মান বা কলামের নাম');
+  }
+  // ---------- statements
+  stmt(){
+    const x=this.peek();
+    if(!x||x.k!=='w')this.fail('SELECT, INSERT, UPDATE, DELETE, CREATE বা DROP');
+    const start=x.s;let r;
+    switch(x.u){
+      case 'SELECT':this.i++;r=this.select();break;
+      case 'INSERT':this.i++;r=this.insert();break;
+      case 'UPDATE':this.i++;r=this.update();break;
+      case 'DELETE':this.i++;r=this.del();break;
+      case 'CREATE':this.i++;r=this.create();break;
+      case 'DROP':this.i++;r=this.drop();break;
+      case 'ALTER':this.i++;r=this.alter();break;
+      default:throw E(`"${this.raw(x)}" কমান্ডটি চেনা যায়নি। SELECT, INSERT, UPDATE, DELETE, CREATE, DROP বা ALTER দিয়ে শুরু করো।`);
+    }
+    const end=this.t[this.i-1].e;r.text=this.src.slice(start,end);
+    if(!this.acceptSym(';')&&this.peek())this.fail('; (সেমিকোলন) দিয়ে বাক্য শেষ করা');
+    return r;
+  }
+  tref(){const name=this.ident('টেবিলের নাম');let alias=null;
+    if(this.acceptKw('AS'))alias=this.ident('অ্যালিয়াস');
+    else{const x=this.peek();if(x&&(x.k==='id'||(x.k==='w'&&!RES.has(x.u))))alias=this.ident()}
+    return{name,alias:alias||name}}
+  select(){
+    const q={k:'select',cols:[],from:[],joins:[],where:null,group:[],having:null,order:[],limit:null,offset:0};
+    q.distinct=this.acceptKw('DISTINCT');
+    for(;;){
+      if(this.acceptSym('*'))q.cols.push({star:true});
+      else if(this.peek()&&this.peek(1)&&this.peek(1).v==='.'&&this.peek(2)&&this.peek(2).v==='*'&&this.peek().k!=='sym'){const tb=this.peek().v;this.i+=3;q.cols.push({star:true,tbl:tb})}
+      else{const a=this.peek();const e=this.expr();const b=this.t[this.i-1];let alias=null;
+        if(this.acceptKw('AS'))alias=this.ident('অ্যালিয়াস');
+        else{const y=this.peek();if(y&&(y.k==='id'||(y.k==='w'&&!RES.has(y.u))))alias=this.ident()}
+        q.cols.push({e,alias,label:e.t==='col'?e.name:this.src.slice(a.s,b.e)})}
+      if(!this.acceptSym(','))break;
+    }
+    if(this.acceptKw('FROM')){
+      q.from.push(this.tref());
+      for(;;){
+        if(this.acceptSym(',')){q.from.push(this.tref());continue}
+        let type=null;
+        if(this.acceptKw('INNER')){this.expectKw('JOIN','JOIN');type='inner'}
+        else if(this.acceptKw('LEFT')){this.expectKw('JOIN','JOIN');type='left'}
+        else if(this.acceptKw('CROSS')){this.expectKw('JOIN','JOIN');type='cross'}
+        else if(this.acceptKw('JOIN'))type='inner';
+        if(!type)break;
+        const tr=this.tref();let on=null;
+        if(type!=='cross'){this.expectKw('ON','ON (যেমন ON a.id = b.id)');on=this.expr()}
+        q.joins.push({type,tr,on});
+      }
+    }else if(q.cols.some(c=>c.star))throw E('SELECT * লিখলে FROM দিয়ে টেবিলের নাম দিতে হয়। যেমন: SELECT * FROM student;');
+    if(this.acceptKw('WHERE'))q.where=this.expr();
+    if(this.acceptKw('GROUP')){this.expectKw('BY','BY');q.group.push(this.expr());while(this.acceptSym(','))q.group.push(this.expr())}
+    if(this.acceptKw('HAVING'))q.having=this.expr();
+    if(this.acceptKw('ORDER')){this.expectKw('BY','BY');
+      do{const e=this.expr();let d=false;if(this.acceptKw('DESC'))d=true;else this.acceptKw('ASC');q.order.push({e,d})}while(this.acceptSym(','))}
+    if(this.acceptKw('LIMIT')){const n=this.peek();if(!n||n.k!=='num')this.fail('একটি সংখ্যা');this.i++;q.limit=n.v;
+      if(this.acceptKw('OFFSET')){const o=this.peek();if(!o||o.k!=='num')this.fail('একটি সংখ্যা');this.i++;q.offset=o.v}}
+    return q;
+  }
+  insert(){
+    this.expectKw('INTO','INTO');const table=this.ident('টেবিলের নাম');let cols=null;
+    if(this.acceptSym('(')){cols=[this.ident('কলামের নাম')];while(this.acceptSym(','))cols.push(this.ident('কলামের নাম'));this.expectSym(')')}
+    this.expectKw('VALUES','VALUES');const rows=[];
+    do{this.expectSym('(');const r=[this.expr()];while(this.acceptSym(','))r.push(this.expr());this.expectSym(')');rows.push(r)}while(this.acceptSym(','));
+    return{k:'insert',table,cols,rows};
+  }
+  update(){
+    const table=this.ident('টেবিলের নাম');this.expectKw('SET','SET');const sets=[];
+    do{const c=this.ident('কলামের নাম');this.expectSym('=');sets.push({c,e:this.expr()})}while(this.acceptSym(','));
+    let where=null;if(this.acceptKw('WHERE'))where=this.expr();
+    return{k:'update',table,sets,where};
+  }
+  del(){this.expectKw('FROM','FROM');const table=this.ident('টেবিলের নাম');let where=null;if(this.acceptKw('WHERE'))where=this.expr();return{k:'delete',table,where}}
+  coldef(){
+    const name=this.ident('কলামের নাম');let type='TEXT';const x=this.peek();
+    if(x&&x.k==='w'&&!['PRIMARY','NOT','NULL','UNIQUE'].includes(x.u)){type=x.u;this.i++;if(this.acceptSym('(')){while(!this.sym(')')&&this.peek())this.i++;this.expectSym(')')}}
+    let pk=false,nn=false;
+    for(;;){
+      if(this.acceptKw('PRIMARY')){this.expectKw('KEY','KEY');pk=true;nn=true}
+      else if(this.acceptKw('NOT')){this.expectKw('NULL','NULL');nn=true}
+      else if(this.acceptKw('NULL')||this.acceptKw('UNIQUE')){}
+      else break;
+    }
+    return{name,type,pk,nn};
+  }
+  create(){
+    this.expectKw('TABLE','TABLE');const name=this.ident('টেবিলের নাম');this.expectSym('(');const cols=[];
+    do{
+      if(this.kw('PRIMARY')){this.i++;this.expectKw('KEY','KEY');this.expectSym('(');const n=this.ident();this.expectSym(')');const c=cols.find(c=>c.name.toLowerCase()===n.toLowerCase());if(c){c.pk=true;c.nn=true}}
+      else cols.push(this.coldef());
+    }while(this.acceptSym(','));
+    this.expectSym(')');return{k:'create',name,cols};
+  }
+  drop(){this.expectKw('TABLE','TABLE');let ie=false;if(this.acceptKw('IF')){this.expectKw('EXISTS','EXISTS');ie=true}return{k:'drop',name:this.ident('টেবিলের নাম'),ie}}
+  alter(){this.expectKw('TABLE','TABLE');const name=this.ident('টেবিলের নাম');this.expectKw('ADD','ADD');this.acceptKw('COLUMN');return{k:'alter',name,col:this.coldef()}}
+}
+// ---------- evaluation
+const isNum=v=>typeof v==='number'||(typeof v==='string'&&v.trim()!==''&&!isNaN(v));
+function cmp(a,b){
+  if(a==null||b==null)return null;
+  if((typeof a==='number'||typeof b==='number')&&isNum(a)&&isNum(b)){a=+a;b=+b;return a<b?-1:a>b?1:0}
+  a=String(a).toLowerCase();b=String(b).toLowerCase();return a<b?-1:a>b?1:0;
+}
+const tv=v=>v==null?null:(typeof v==='boolean'?v:(typeof v==='number'?v!==0:String(v)!==''));
+function like(v,p){if(v==null||p==null)return null;
+  const re=new RegExp('^'+String(p).replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/%/g,'.*').replace(/_/g,'.')+'$','is');return re.test(String(v))}
+function num(v){if(v==null)return null;const n=+v;if(isNaN(n))throw E(`"${v}" একটি সংখ্যা নয়, তাই হিসাব করা যায় না।`);return n}
+function hasAgg(e){if(!e||typeof e!=='object')return false;if(e.t==='fn'&&AGG.has(e.name))return true;
+  for(const k of ['l','r','e','p','a','b'])if(e[k]&&hasAgg(e[k]))return true;
+  if(e.list&&e.list.some(hasAgg))return true;if(e.args&&e.args.some(hasAgg))return true;return false}
+function lookup(ctx,e){
+  if(e.tbl){const r=ctx[e.tbl.toLowerCase()];if(!r)throw E(`"${e.tbl}" নামে কোনো টেবিল বা অ্যালিয়াস নেই।`);
+    const k=e.name.toLowerCase();if(!(k in r.row))throw E(`"${e.tbl}" টেবিলে "${e.name}" নামে কোনো কলাম নেই।`);return r.row[k]}
+  const k=e.name.toLowerCase();let found=null,n=0;
+  for(const a in ctx){if(k in ctx[a].row){found=ctx[a].row[k];n++}}
+  if(n===0)throw E(`"${e.name}" নামে কোনো কলাম নেই। কলামের নাম ঠিক আছে কি দেখো। টেক্সট মান হলে একক উদ্ধৃতি ('${e.name}') দিতে হবে।`);
+  if(n>1)throw E(`"${e.name}" কলামটি একাধিক টেবিলে আছে। টেবিলের নামসহ লেখো, যেমন student.${e.name}।`);
+  return found;
+}
+function ev(e,ctx,grp){
+  switch(e.t){
+    case 'lit':return e.v;
+    case 'col':return lookup(ctx,e);
+    case 'neg':{const v=ev(e.e,ctx,grp);return v==null?null:-num(v)}
+    case 'not':{const v=tv(ev(e.e,ctx,grp));return v==null?null:!v}
+    case 'bin':{
+      if(e.op==='AND'){const a=tv(ev(e.l,ctx,grp));if(a===false)return false;const b=tv(ev(e.r,ctx,grp));if(b===false)return false;return a==null||b==null?null:true}
+      if(e.op==='OR'){const a=tv(ev(e.l,ctx,grp));if(a===true)return true;const b=tv(ev(e.r,ctx,grp));if(b===true)return true;return a==null||b==null?null:false}
+      const a=ev(e.l,ctx,grp),b=ev(e.r,ctx,grp);
+      if(['=','<>','<','>','<=','>='].includes(e.op)){const c=cmp(a,b);if(c==null)return null;
+        return e.op==='='?c===0:e.op==='<>'?c!==0:e.op==='<'?c<0:e.op==='>'?c>0:e.op==='<='?c<=0:c>=0}
+      if(a==null||b==null)return null;
+      const x=num(a),y=num(b);
+      switch(e.op){case '+':return x+y;case '-':return x-y;case '*':return x*y;case '/':return y===0?null:x/y;case '%':return y===0?null:x%y}
+    }
+    case 'like':{const r=like(ev(e.e,ctx,grp),ev(e.p,ctx,grp));return r==null?null:(e.neg?!r:r)}
+    case 'in':{const v=ev(e.e,ctx,grp);if(v==null)return null;let hit=false;for(const x of e.list){if(cmp(v,ev(x,ctx,grp))===0){hit=true;break}}return e.neg?!hit:hit}
+    case 'between':{const v=ev(e.e,ctx,grp),a=ev(e.a,ctx,grp),b=ev(e.b,ctx,grp);const c1=cmp(v,a),c2=cmp(v,b);if(c1==null||c2==null)return null;const r=c1>=0&&c2<=0;return e.neg?!r:r}
+    case 'isnull':{const v=ev(e.e,ctx,grp);return e.neg?v!=null:v==null}
+    case 'fn':return fn(e,ctx,grp);
+  }
+  throw E('এই রাশিটি বোঝা যায়নি।');
+}
+function fn(e,ctx,grp){
+  if(AGG.has(e.name)){
+    if(!grp)throw E(`${e.name}() ফাংশন WHERE-এর ভেতরে ব্যবহার করা যায় না। গ্রুপের শর্ত দিতে HAVING ব্যবহার করো।`);
+    if(e.name==='COUNT'&&e.star)return grp.length;
+    if(e.args.length!==1)throw E(`${e.name}() ফাংশনে একটি কলাম দিতে হয়।`);
+    let vals=grp.map(c=>ev(e.args[0],c,null)).filter(v=>v!=null);
+    if(e.distinct){const s=new Set();vals=vals.filter(v=>{const k=String(v).toLowerCase();if(s.has(k))return false;s.add(k);return true})}
+    if(e.name==='COUNT')return vals.length;
+    if(!vals.length)return null;
+    if(e.name==='MIN'||e.name==='MAX'){return vals.reduce((a,b)=>{const c=cmp(a,b);return e.name==='MIN'?(c<=0?a:b):(c>=0?a:b)})}
+    const ns=vals.map(num),sum=ns.reduce((a,b)=>a+b,0);
+    return e.name==='SUM'?sum:sum/ns.length;
+  }
+  const a=e.args.map(x=>ev(x,ctx,grp));
+  switch(e.name){
+    case 'UPPER':return a[0]==null?null:String(a[0]).toUpperCase();
+    case 'LOWER':return a[0]==null?null:String(a[0]).toLowerCase();
+    case 'LENGTH':case 'LEN':return a[0]==null?null:String(a[0]).length;
+    case 'ABS':return a[0]==null?null:Math.abs(num(a[0]));
+    case 'ROUND':{if(a[0]==null)return null;const d=a[1]==null?0:num(a[1]);const f=10**d;return Math.round(num(a[0])*f)/f}
+  }
+  throw E(`"${e.name}" ফাংশনটি এই ল্যাবে নেই। COUNT, SUM, AVG, MIN, MAX, UPPER, LOWER, LENGTH, ABS, ROUND ব্যবহার করতে পারো।`);
+}
+// ---------- database
+const NUMT=/^(INT|INTEGER|NUMBER|NUMERIC|DECIMAL|FLOAT|DOUBLE|REAL|SMALLINT|BIGINT)$/;
+const getT=(db,n)=>{const t=db.tables[n.toLowerCase()];if(!t)throw E(`"${n}" নামে কোনো টেবিল নেই। "টেবিল ও ডেটা" অংশে টেবিলের তালিকা দেখো।`);return t};
+function coerce(col,v){if(v==null)return null;if(NUMT.test(col.type)){if(!isNum(v))throw E(`"${col.name}" কলামটি সংখ্যার, কিন্তু "${v}" দেওয়া হয়েছে।`);return +v}return typeof v==='number'?v:String(v)}
+function rowsOf(db,tr){const t=getT(db,tr.name);return t}
+function runSelect(db,q){
+  let ctxs=[{}];
+  const srcs=[];
+  const add=(tr)=>{const t=getT(db,tr.name);srcs.push({alias:tr.alias,t});return t};
+  if(q.from.length){
+    const first=add(q.from[0]);
+    ctxs=first.rows.map(r=>({[q.from[0].alias.toLowerCase()]:{row:r}}));
+    for(let i=1;i<q.from.length;i++){const t=add(q.from[i]);const a=q.from[i].alias.toLowerCase();const out=[];
+      for(const c of ctxs)for(const r of t.rows)out.push({...c,[a]:{row:r}});ctxs=out}
+    for(const j of q.joins){
+      const t=add(j.tr);const a=j.tr.alias.toLowerCase();const out=[];
+      const nullRow=Object.fromEntries(t.cols.map(c=>[c.name.toLowerCase(),null]));
+      for(const c of ctxs){let hit=false;
+        for(const r of t.rows){const nc={...c,[a]:{row:r}};if(j.type==='cross'||tv(ev(j.on,nc,null))===true){out.push(nc);hit=true}}
+        if(!hit&&j.type==='left')out.push({...c,[a]:{row:nullRow}});
+      }
+      ctxs=out;
+    }
+  }
+  const seen=new Set();for(const s of srcs){const k=s.alias.toLowerCase();if(seen.has(k))throw E(`"${s.alias}" নামটি দুবার ব্যবহার হয়েছে। একই টেবিল দুবার নিলে আলাদা অ্যালিয়াস দাও।`);seen.add(k)}
+  if(q.where){if(hasAgg(q.where))throw E('WHERE-এর ভেতরে COUNT, SUM ইত্যাদি ব্যবহার করা যায় না। HAVING ব্যবহার করো।');ctxs=ctxs.filter(c=>tv(ev(q.where,c,null))===true)}
+  // columns
+  const outCols=[];
+  q.cols.forEach(c=>{
+    if(c.star){srcs.forEach(s=>{if(c.tbl&&s.alias.toLowerCase()!==c.tbl.toLowerCase())return;
+      s.t.cols.forEach(col=>outCols.push({label:col.name,e:{t:'col',tbl:s.alias,name:col.name}}))});
+      if(c.tbl&&!srcs.some(s=>s.alias.toLowerCase()===c.tbl.toLowerCase()))throw E(`"${c.tbl}" নামে কোনো টেবিল নেই।`)}
+    else outCols.push({label:c.alias||c.label,e:c.e,alias:c.alias});
+  });
+  const agg=q.group.length>0||q.having||outCols.some(c=>hasAgg(c.e));
+  let items=[]; // {out, ctx, grp}
+  if(agg){
+    let groups;
+    if(q.group.length){const m=new Map();for(const c of ctxs){const k=JSON.stringify(q.group.map(g=>{const v=ev(g,c,null);return v==null?null:String(v).toLowerCase()}));if(!m.has(k))m.set(k,[]);m.get(k).push(c)}groups=[...m.values()]}
+    else groups=[ctxs];
+    for(const g of groups){const ctx=g[0]||{};
+      if(q.having&&tv(ev(q.having,ctx,g))!==true)continue;
+      items.push({out:outCols.map(c=>ev(c.e,ctx,g)),ctx,grp:g})}
+  }else items=ctxs.map(c=>({out:outCols.map(o=>ev(o.e,c,null)),ctx:c,grp:null}));
+  if(q.distinct){const s=new Set();items=items.filter(it=>{const k=JSON.stringify(it.out.map(v=>v==null?null:String(v).toLowerCase()));if(s.has(k))return false;s.add(k);return true})}
+  if(q.order.length){
+    const key=(it,o)=>{const e=o.e;
+      if(e.t==='lit'&&typeof e.v==='number'){const i=e.v-1;if(i<0||i>=outCols.length)throw E(`ORDER BY ${e.v} সঠিক কলাম নম্বর নয়।`);return it.out[i]}
+      if(e.t==='col'&&!e.tbl){const i=outCols.findIndex(c=>c.alias&&c.alias.toLowerCase()===e.name.toLowerCase());if(i>=0)return it.out[i]}
+      return ev(e,it.ctx,it.grp)};
+    const withKeys=items.map(it=>({it,k:q.order.map(o=>key(it,o))}));
+    withKeys.sort((x,y)=>{for(let i=0;i<q.order.length;i++){const a=x.k[i],b=y.k[i];let c;
+      if(a==null&&b==null)c=0;else if(a==null)c=-1;else if(b==null)c=1;else c=cmp(a,b);
+      if(c)return q.order[i].d?-c:c}return 0});
+    items=withKeys.map(w=>w.it);
+  }
+  let rows=items.map(i=>i.out);
+  if(q.offset)rows=rows.slice(q.offset);
+  if(q.limit!=null)rows=rows.slice(0,q.limit);
+  return{type:'rows',cols:outCols.map(c=>c.label),rows};
+}
+function execStmt(db,s){
+  switch(s.k){
+    case 'select':return runSelect(db,s);
+    case 'create':{const k=s.name.toLowerCase();if(db.tables[k])throw E(`"${s.name}" নামে টেবিল আগেই আছে।`);
+      const names=new Set();s.cols.forEach(c=>{const n=c.name.toLowerCase();if(names.has(n))throw E(`"${c.name}" কলামটি দুবার লেখা হয়েছে।`);names.add(n)});
+      db.tables[k]={name:s.name,cols:s.cols,rows:[]};return{type:'msg',text:`"${s.name}" টেবিল তৈরি হয়েছে।`}}
+    case 'drop':{const k=s.name.toLowerCase();if(!db.tables[k]){if(s.ie)return{type:'msg',text:'টেবিলটি আগে থেকেই নেই।'};throw E(`"${s.name}" নামে কোনো টেবিল নেই।`)}
+      delete db.tables[k];return{type:'msg',text:`"${s.name}" টেবিল মুছে ফেলা হয়েছে।`}}
+    case 'alter':{const t=getT(db,s.name);if(t.cols.some(c=>c.name.toLowerCase()===s.col.name.toLowerCase()))throw E(`"${s.col.name}" কলাম আগেই আছে।`);
+      t.cols.push(s.col);t.rows.forEach(r=>r[s.col.name.toLowerCase()]=null);return{type:'msg',text:`"${s.name}" টেবিলে "${s.col.name}" কলাম যোগ হয়েছে।`}}
+    case 'insert':{const t=getT(db,s.table);
+      const cols=s.cols?s.cols.map(n=>{const c=t.cols.find(c=>c.name.toLowerCase()===n.toLowerCase());if(!c)throw E(`"${s.table}" টেবিলে "${n}" নামে কোনো কলাম নেই।`);return c}):t.cols;
+      let n=0;const staged=[];
+      for(const vals of s.rows){
+        if(vals.length!==cols.length)throw E(`${cols.length}টি কলামের জন্য ${vals.length}টি মান দেওয়া হয়েছে। মানের সংখ্যা কলামের সংখ্যার সমান হতে হবে।`);
+        const row=Object.fromEntries(t.cols.map(c=>[c.name.toLowerCase(),null]));
+        cols.forEach((c,i)=>{row[c.name.toLowerCase()]=coerce(c,ev(vals[i],{},null))});
+        for(const c of t.cols){const v=row[c.name.toLowerCase()];
+          if(c.nn&&v==null)throw E(`"${c.name}" কলামে মান খালি রাখা যাবে না।`);
+          if(c.pk&&[...t.rows,...staged].some(r=>cmp(r[c.name.toLowerCase()],v)===0))throw E(`"${c.name}" প্রাইমারি কি, এই মান (${v}) আগেই আছে। প্রাইমারি কি-এর মান ইউনিক হতে হয়।`)}
+        staged.push(row);n++;
+      }
+      t.rows.push(...staged);return{type:'msg',text:`${n}টি রেকর্ড যোগ হয়েছে।`}}
+    case 'update':{const t=getT(db,s.table);const a=t.name.toLowerCase();let n=0;
+      const sets=s.sets.map(x=>{const c=t.cols.find(c=>c.name.toLowerCase()===x.c.toLowerCase());if(!c)throw E(`"${s.table}" টেবিলে "${x.c}" নামে কোনো কলাম নেই।`);return{c,e:x.e}});
+      const upd=[];
+      for(const r of t.rows){const ctx={[a]:{row:r}};if(!s.where||tv(ev(s.where,ctx,null))===true){upd.push([r,sets.map(x=>coerce(x.c,ev(x.e,ctx,null)))])}}
+      for(const [r,vals] of upd){
+        sets.forEach((x,i)=>{if(x.c.pk&&t.rows.some(o=>o!==r&&cmp(o[x.c.name.toLowerCase()],vals[i])===0))throw E(`"${x.c.name}" প্রাইমারি কি, এই মান (${vals[i]}) আগেই আছে।`)})}
+      for(const [r,vals] of upd){sets.forEach((x,i)=>r[x.c.name.toLowerCase()]=vals[i]);n++}
+      return{type:'msg',text:s.where?`${n}টি রেকর্ড পরিবর্তন হয়েছে।`:`${n}টি রেকর্ড পরিবর্তন হয়েছে। (WHERE না দেওয়ায় সব রেকর্ড বদলে গেছে)`}}
+    case 'delete':{const t=getT(db,s.table);const a=t.name.toLowerCase();const before=t.rows.length;
+      t.rows=t.rows.filter(r=>s.where?tv(ev(s.where,{[a]:{row:r}},null))!==true:false);
+      const n=before-t.rows.length;return{type:'msg',text:s.where?`${n}টি রেকর্ড মুছে গেছে।`:`${n}টি রেকর্ড মুছে গেছে। (WHERE না দেওয়ায় সব রেকর্ড মুছে গেছে)`}}
+  }
+}
+function run(db,sql){
+  const out=[];let p;
+  try{p=new P(sql)}catch(e){if(e.sqlErr)return[{type:'err',text:'',msg:e.msg}];throw e}
+  if(!p.t.length)return[{type:'err',text:'',msg:'কোনো SQL লেখা হয়নি।'}];
+  while(p.peek()){
+    if(p.acceptSym(';'))continue;
+    let s;
+    try{s=p.stmt();const r=execStmt(db,s);r.text=s.text;out.push(r)}
+    catch(e){if(!e.sqlErr)throw e;out.push({type:'err',text:s?s.text:'',msg:e.msg});break}
+  }
+  return out;
+}
+const clone=db=>JSON.parse(JSON.stringify(db));
+const SAMPLE=`
+CREATE TABLE student (id INT PRIMARY KEY, name VARCHAR(30), class INT, section VARCHAR(10), city VARCHAR(20), marks INT);
+INSERT INTO student VALUES (1,'Mim',11,'Morning','Dhaka',85),(2,'Arif',11,'Day','Khulna',78),(3,'Tinni',12,'Morning','Sylhet',92),(4,'Rahim',12,'Day','Dhaka',67),(5,'Karim',11,'Morning','Rajshahi',74),(6,'Sadia',12,'Morning','Dhaka',88),(7,'Nabil',11,'Day','Chattogram',55),(8,'Fatema',12,'Day','Khulna',95),(9,'Imran',11,'Morning','Sylhet',60),(10,'Rima',12,'Morning','Chattogram',81);
+CREATE TABLE result (id INT, sub VARCHAR(20), marks INT);
+INSERT INTO result VALUES (1,'ICT',85),(2,'ICT',78),(3,'Math',95),(4,'ICT',66),(5,'Math',72),(6,'ICT',90),(1,'Math',70),(8,'ICT',94);
+`;
+function sample(){const db={tables:{}};run(db,SAMPLE);return db}
+return{run,clone,sample};
+})();
+
+
+(()=>{
+const SEL=(sel,q=document)=>q.querySelector(sel);
+let DB=SQLE.sample();
+const EX=[
+ ['সব ডেটা','SELECT * FROM student;'],
+ ['নির্দিষ্ট কলাম','SELECT name, city FROM student;'],
+ ['WHERE','SELECT name, marks FROM student\nWHERE marks >= 80;'],
+ ['AND / OR',"SELECT * FROM student\nWHERE class = 12 AND city = 'Dhaka';"],
+ ['ORDER BY','SELECT name, marks FROM student\nORDER BY marks DESC;'],
+ ['LIKE',"SELECT * FROM student\nWHERE name LIKE 'R%';"],
+ ['COUNT / AVG','SELECT COUNT(*), AVG(marks), MAX(marks)\nFROM student;'],
+ ['GROUP BY','SELECT city, COUNT(*) AS total\nFROM student\nGROUP BY city;'],
+ ['JOIN','SELECT student.name, result.sub, result.marks\nFROM student\nJOIN result ON student.id = result.id;'],
+ ['INSERT',"INSERT INTO student VALUES (11,'Sumi',11,'Day','Dhaka',77);\nSELECT * FROM student;"],
+ ['UPDATE','UPDATE student SET marks = 65\nWHERE id = 7;\nSELECT * FROM student;'],
+ ['DELETE','DELETE FROM student\nWHERE marks < 60;\nSELECT * FROM student;'],
+ ['CREATE TABLE',"CREATE TABLE teacher (tid INT PRIMARY KEY, tname VARCHAR(30), subject VARCHAR(20));\nINSERT INTO teacher VALUES (1,'Rahman','ICT'),(2,'Salma','Math');\nSELECT * FROM teacher;"]
+];
+const cell=v=>v===null||v===undefined?'<span class="null">NULL</span>':esc(v);
+function renderRes(rs){
+  return rs.map(r=>{
+    const q=r.text?`<div class="q-t">${esc(r.text)}</div>`:'';
+    if(r.type==='err')return `<div class="rs">${q}<div class="err">${esc(r.msg)}</div></div>`;
+    if(r.type==='msg')return `<div class="rs">${q}<div class="msg-ok">✓ ${esc(r.text)}</div></div>`;
+    const body=r.rows.length?r.rows.map(row=>'<tr>'+row.map(v=>`<td class="${typeof v==='number'?'n':''}">${cell(v)}</td>`).join('')+'</tr>').join(''):`<tr><td colspan="${r.cols.length}" class="null">কোনো রেকর্ড পাওয়া যায়নি</td></tr>`;
+    return `<div class="rs">${q}<div class="tbl"><table><thead><tr>${r.cols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table></div><div class="hint">${bn(r.rows.length)}টি সারি</div></div>`;
+  }).join('');
+}
+function renderTabs(){
+  SEL('#s-tabs').innerHTML=Object.values(DB.tables).map(t=>{
+    const h=t.cols.map(c=>`<th>${esc(c.name)}<br><small style="font-weight:400">${esc(c.type||'')}${c.pk?' 🔑':''}</small></th>`).join('');
+    const b=t.rows.map(r=>'<tr>'+t.cols.map(c=>`<td>${cell(r[c.name.toLowerCase()])}</td>`).join('')+'</tr>').join('');
+    return `<div class="tn">${esc(t.name)}</div><div class="tbl"><table><thead><tr>${h}</tr></thead><tbody>${b}</tbody></table></div>`;
+  }).join('')||'<p class="hint">কোনো টেবিল নেই।</p>';
+}
+function runNow(live){
+  const sql=SEL('#s-code').value;
+  if(!sql.trim()){SEL('#s-out').innerHTML='<p class="hint">উপরে SQL লিখে "চালাও" চাপো।</p>';return}
+  if(live){
+    // live mode: run on a scratch copy and only if every statement is a SELECT
+    const stmts=sql.split(';').map(s=>s.trim()).filter(Boolean);
+    if(!stmts.every(s=>/^select\b/i.test(s))){SEL('#s-out').innerHTML='<p class="hint">লাইভ মোডে শুধু SELECT চলে। ডেটা বদলানোর কমান্ড (INSERT, UPDATE, DELETE...) "চালাও ▶" চাপলে চলবে।</p>';return}
+    const rs=SQLE.run(SQLE.clone(DB),sql);
+    SEL('#s-out').innerHTML=renderRes(rs);return;
+  }
+  const rs=SQLE.run(DB,sql);
+  SEL('#s-out').innerHTML=renderRes(rs);
+  renderTabs();
+}
+SEL('#s-ex').innerHTML=EX.map((e,i)=>`<button class="chip" type="button" data-i="${i}">${esc(e[0])}</button>`).join('');
+SEL('#s-ex').onclick=e=>{const b=e.target.closest('[data-i]');if(!b)return;SEL('#s-code').value=EX[b.dataset.i][1];runNow(false)};
+SEL('#s-run').onclick=()=>runNow(false);
+SEL('#s-reset').onclick=()=>{DB=SQLE.sample();renderTabs();SEL('#s-out').innerHTML='<div class="msg-ok">✓ ডেটাবেজ আগের অবস্থায় ফিরেছে।</div>'};
+let tm;
+SEL('#s-code').addEventListener('input',()=>{if(!SEL('#s-live').checked)return;clearTimeout(tm);tm=setTimeout(()=>runNow(true),350)});
+SEL('#s-code').addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();runNow(false)}
+  if(e.key==='Tab'){e.preventDefault();const t=e.target,s=t.selectionStart;t.value=t.value.slice(0,s)+'  '+t.value.slice(t.selectionEnd);t.selectionStart=t.selectionEnd=s+2}
+});
+
+/* challenges */
+const CH=[
+ ['student টেবিলের সব তথ্য দেখাও।','SELECT * FROM student;'],
+ ['শুধু শিক্ষার্থীর নাম (name) ও শহর (city) দেখাও।','SELECT name, city FROM student;'],
+ ["যাদের শহর 'Dhaka', তাদের নাম ও নম্বর দেখাও।","SELECT name, marks FROM student WHERE city = 'Dhaka';"],
+ ["যারা ১২ শ্রেণির (class = 12) এবং সেকশন 'Morning', তাদের সব তথ্য দেখাও।","SELECT * FROM student WHERE class = 12 AND section = 'Morning';"],
+ ['নাম ও নম্বর দেখাও, নম্বর বেশি থেকে কম ক্রমে সাজিয়ে।','SELECT name, marks FROM student ORDER BY marks DESC;'],
+ ["যাদের নাম 'R' দিয়ে শুরু, তাদের সব তথ্য দেখাও।","SELECT * FROM student WHERE name LIKE 'R%';"],
+ ['মোট কতজন শিক্ষার্থী আছে গুনে দেখাও।','SELECT COUNT(*) FROM student;'],
+ ['সব শিক্ষার্থীর নম্বরের গড় (AVG) বের করো।','SELECT AVG(marks) FROM student;'],
+ ['প্রতিটি শহরে কতজন শিক্ষার্থী আছে দেখাও (শহরের নাম ও সংখ্যা)।','SELECT city, COUNT(*) FROM student GROUP BY city;'],
+ ["নতুন শিক্ষার্থী যোগ করো: id 11, নাম 'Sumi', class 11, section 'Day', city 'Dhaka', marks 77।","INSERT INTO student VALUES (11,'Sumi',11,'Day','Dhaka',77);"],
+ ['id ৭ এর শিক্ষার্থীর নম্বর বদলে ৬৫ করো।','UPDATE student SET marks = 65 WHERE id = 7;'],
+ ['যাদের নম্বর ৬০ এর কম, তাদের রেকর্ড মুছে ফেলো।','DELETE FROM student WHERE marks < 60;'],
+ ['নাম (student) ও বিষয় (result.sub) ও নম্বর (result.marks) একসাথে দেখাও — দুই টেবিল id দিয়ে JOIN করে।','SELECT student.name, result.sub, result.marks FROM student JOIN result ON student.id = result.id;']
+];
+let done=new Set();try{done=new Set(JSON.parse(localStorage.getItem('ict-sql-done')||'[]'))}catch(e){}
+const saveDone=()=>{try{localStorage.setItem('ict-sql-done',JSON.stringify([...done]))}catch(e){}};
+const open={};
+function chRender(){
+  SEL('#c-prog').textContent=`সম্পন্ন: ${bn(done.size)} / ${bn(CH.length)}`;
+  SEL('#c-list').innerHTML=CH.map((c,i)=>`<div class="ch ${done.has(i)?'done':''}" data-i="${i}">
+    <div class="ct">${done.has(i)?'✓ ':''}${bn(i+1)}। ${esc(c[0])}</div>
+    <div class="cb"><button class="btn" data-a="use" type="button">এডিটরে নাও</button><button class="chip" data-a="sol" type="button">সমাধান দেখো</button></div>
+    <div class="fb" id="fb${i}">${open[i]?`<pre>${esc(c[1])}</pre>`:''}</div></div>`).join('');
+}
+const last=rs=>{for(let i=rs.length-1;i>=0;i--)if(rs[i].type!=='msg'||true)return rs[i]};
+const norm=r=>r.rows.map(x=>JSON.stringify(x.map(v=>typeof v==='number'?Math.round(v*1e6)/1e6:v)));
+function same(a,b){ // a user result, b solution
+  if(a.type!=='rows'||b.type!=='rows')return false;
+  const x=norm(a),y=norm(b);
+  if(x.length!==y.length)return false;
+  return JSON.stringify(x)===JSON.stringify(y);
+}
+function check(i){
+  const user=SEL('#s-code').value,sol=CH[i][1];
+  const fb=SEL('#fb'+i);
+  if(!user.trim()){fb.innerHTML='<span style="color:var(--bad)">আগে এডিটরে SQL লেখো।</span>';return}
+  const d1=SQLE.sample(),d2=SQLE.sample();
+  const ru=SQLE.run(d1,user),rsol=SQLE.run(d2,sol);
+  const bad=ru.find(r=>r.type==='err');
+  if(bad){fb.innerHTML=`<span style="color:var(--bad)">ত্রুটি: ${esc(bad.msg)}</span>`;return}
+  let ok;
+  if(/^\s*select/i.test(sol)){
+    const a=last(ru),b=last(rsol);
+    ok=a&&a.type==='rows'&&b.cols.length===a.cols.length;
+    if(ok){ if(/order\s+by/i.test(sol))ok=same(a,b); else{const x=norm(a).sort(),y=norm(b).sort();ok=JSON.stringify(x)===JSON.stringify(y)} }
+  }else ok=JSON.stringify(d1.tables)===JSON.stringify(d2.tables);
+  if(ok){done.add(i);saveDone();chRender();SEL('#fb'+i).innerHTML='<span style="color:var(--brand);font-weight:700">🎉 সঠিক হয়েছে! চমৎকার।</span>'}
+  else fb.innerHTML='<span style="color:var(--bad)">এখনো মেলেনি। প্রশ্নটা আবার পড়ো, কলাম/শর্ত/সাজানোর ক্রম দেখো। দরকার হলে "সমাধান দেখো" চাপো।</span>';
+}
+SEL('#c-list').onclick=e=>{
+  const b=e.target.closest('button');if(!b)return;
+  const i=+b.closest('.ch').dataset.i,a=b.dataset.a;
+  if(a==='use'){SEL('#s-code').value='';SEL('#s-code').focus();SEL('#s-out').innerHTML=`<p class="hint">অনুশীলনী ${bn(i+1)}: ${esc(CH[i][0])}</p>`;
+    b.parentNode.innerHTML='<button class="btn" data-a="chk" type="button">পরীক্ষা করো ✓</button><button class="chip" data-a="sol" type="button">সমাধান দেখো</button>'}
+  else if(a==='chk')check(i);
+  else if(a==='sol'){open[i]=!open[i];SEL('#fb'+i).innerHTML=open[i]?`<pre>${esc(CH[i][1])}</pre>`:''}
+};
+renderTabs();chRender();runNow(true);
+})();
 
 /* ================= PAST PAPERS ================= */
 const YEARS=[2023,2024,2025,2026],PKEY='ict-past-v1',LET={'ক':0,'খ':1,'গ':2,'ঘ':3,a:0,b:1,c:2,d:3,'১':0,'২':1,'৩':2,'৪':3,'1':0,'2':1,'3':2,'4':3};

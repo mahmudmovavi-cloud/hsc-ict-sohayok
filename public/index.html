@@ -924,7 +924,7 @@ async function webSample(input,opts={}){
   for(const b of (opts.images||[]))images.push({media_type:b.type||'image/jpeg',data:await toB64(b)});
   let r;
   try{r=await fetch('/api/ai',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({messages,images})})}catch(e){throw{code:'network'}}
-  if(!r.ok)throw{code:r.status===429?'rate_limited':'error'};
+  if(!r.ok){let d={};try{d=await r.json()}catch(e){}throw{code:r.status===429?'rate_limited':'error',detail:[r.status,d.error,d.detail].filter(Boolean).join(' · ')}}
   const j=await r.json();
   if(opts.onText)opts.onText({text:j.text});
   return{text:j.text};
@@ -985,7 +985,7 @@ async function send(text){
   }catch(e){
     hist.pop();
     const m=e&&e.code==='not_granted'?'এআই ব্যবহারের অনুমতি দেওয়া হয়নি। আবার পাঠালে অনুমতি চাইবে।':e&&e.code==='rate_limited'?'অনেক বেশি অনুরোধ হয়েছে। একটু পরে আবার চেষ্টা করো।':e&&e.code==='noimg'?'এই মুহূর্তে ছবি পড়া যাচ্ছে না। প্রশ্নটি লিখে পাঠাও।':'উত্তর আনা যায়নি। ইন্টারনেট দেখে আবার পাঠাও।';
-    bub.innerHTML=`<div class="err">${m}</div>`;
+    bub.innerHTML=`<div class="err">${m}${e&&e.detail?`<div class="hint" style="margin-top:6px;font-family:var(--f-mono);overflow-wrap:anywhere">কারণ: ${esc(e.detail)}</div>`:''}</div>`;
   }finally{busy=false;$('#c-send').disabled=false;toEnd();inp.focus()}
 }
 
@@ -1084,7 +1084,7 @@ ${src}
     const r=await sampleFn(prompt,{modelTier:'default',cache:false,onText:({text})=>{o.innerHTML=gmd(text)}});
     o.innerHTML=gmd(r.text);
   }catch(e){
-    o.innerHTML=`<div class="err">${e&&e.code==='not_granted'?'এআই ব্যবহারের অনুমতি দেওয়া হয়নি। আবার চেষ্টা করলে অনুমতি চাইবে।':e&&e.code==='rate_limited'?'অনেক বেশি অনুরোধ হয়েছে। একটু পরে আবার চেষ্টা করো।':'উত্তর আনা যায়নি। আবার চেষ্টা করো।'}</div>`;
+    o.innerHTML=`<div class="err">${e&&e.code==='not_granted'?'এআই ব্যবহারের অনুমতি দেওয়া হয়নি। আবার চেষ্টা করলে অনুমতি চাইবে।':e&&e.code==='rate_limited'?'অনেক বেশি অনুরোধ হয়েছে। একটু পরে আবার চেষ্টা করো।':'উত্তর আনা যায়নি। আবার চেষ্টা করো।'}${e&&e.detail?`<div class="hint" style="margin-top:6px;font-family:var(--f-mono);overflow-wrap:anywhere">কারণ: ${esc(e.detail)}</div>`:''}</div>`;
   }finally{gBusy=false;$('#g-run').disabled=false}
 };
 function gmd(t){ // render ```output block as terminal, others via md()

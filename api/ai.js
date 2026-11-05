@@ -68,11 +68,11 @@ module.exports = async (req, res) => {
         } catch (e) {
           r = { ok: false, status: 503 }; j = { error: { message: 'Gemini সময়মতো সাড়া দেয়নি (' + m + ')' } };
         } finally { clearTimeout(t); }
-        if (r.ok || ![500, 503].includes(r.status)) break;
+        if (r.ok || ![500, 503].includes(r.status)) break;   // 429 হলে একই মডেলে আর চেষ্টা নয়
         await new Promise(z => setTimeout(z, 1000));
       }
       if (r.ok) { MODEL = m; break; }          // কাজ করা মডেলটি মনে রাখো
-      if (![400, 404, 500, 503].includes(r.status)) break; // মডেল বন্ধ/ব্যস্ত হলে পরের মডেল, নইলে থামো
+      if (![400, 404, 429, 500, 503].includes(r.status)) break; // মডেল বন্ধ/ব্যস্ত/কোটা শেষ হলে পরের মডেল (প্রতিটি মডেলের কোটা আলাদা), নইলে থামো
     }
     if (!r.ok) return res.status(r.status === 429 ? 429 : 502).json({ error: 'upstream', status: r.status, detail: j && j.error && j.error.message });
     const cand = j.candidates && j.candidates[0];

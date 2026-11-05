@@ -939,7 +939,8 @@ const SYS=`তুমি বাংলাদেশের একজন অভিজ
 7. HTML বা C প্রোগ্রামিংয়ের প্রশ্নে কোড \`\`\` ব্লকে দাও এবং লাইন ধরে ব্যাখ্যা করো।
 8. প্রশ্ন ICT বিষয়ের বাইরে হলে বিনয়ের সাথে জানাও যে তুমি শুধু HSC ICT-তে সাহায্য করতে পারো।
 9. শিরোনামের জন্য #### ব্যবহার করো, তালিকার জন্য - বা 1. ব্যবহার করো। টেবিল ব্যবহার করবে না।
-10. অধ্যায়গুলো: ১ তথ্য ও যোগাযোগ প্রযুক্তি: বিশ্ব ও বাংলাদেশ প্রেক্ষিত; ২ কমিউনিকেশন সিস্টেমস ও কম্পিউটার নেটওয়ার্কিং; ৩ সংখ্যা পদ্ধতি ও ডিজিটাল ডিভাইস; ৪ ওয়েব ডিজাইন পরিচিতি ও HTML; ৫ প্রোগ্রামিং ভাষা; ৬ ডেটাবেজ ম্যানেজমেন্ট সিস্টেম।`;
+10. অধ্যায়গুলো: ১ তথ্য ও যোগাযোগ প্রযুক্তি: বিশ্ব ও বাংলাদেশ প্রেক্ষিত; ২ কমিউনিকেশন সিস্টেমস ও কম্পিউটার নেটওয়ার্কিং; ৩ সংখ্যা পদ্ধতি ও ডিজিটাল ডিভাইস; ৪ ওয়েব ডিজাইন পরিচিতি ও HTML; ৫ প্রোগ্রামিং ভাষা; ৬ ডেটাবেজ ম্যানেজমেন্ট সিস্টেম।
+11. ভূমিকা বা পুনরাবৃত্তি ছাড়া সরাসরি উত্তর শুরু করো। উত্তর যতটা সম্ভব সংক্ষিপ্ত ও গোছানো রাখো।`;
 function md(t){
   const parts=t.split(/```[a-z]*\n?/);let out='';
   parts.forEach((p,i)=>{
@@ -968,12 +969,18 @@ async function webSample(input,opts={}){
   const images=[];
   for(const b of (opts.images||[]))images.push({media_type:b.type||'image/jpeg',data:await toB64(b)});
   let r;
-  const body=JSON.stringify({messages,images});
+  const body=JSON.stringify({messages,images,stream:!!opts.onText});
   for(let k=0;k<2;k++){   // সার্ভার ব্যস্ত/টাইমআউট (502-504) হলে একবার নিজে থেকে আবার চেষ্টা
     try{r=await fetch('/api/ai',{method:'POST',headers:{'content-type':'application/json'},body})}catch(e){if(k)throw{code:'network'};continue}
     if(![502,503,504].includes(r.status))break;
   }
   if(!r.ok){let d={};try{d=await r.json()}catch(e){}const busy=[429,502,503,504].includes(r.status);throw{code:busy?'rate_limited':'error',detail:busy?'':[r.status,d.error,String(d.detail||'').slice(0,180)].filter(Boolean).join(' · ')}}
+  if((r.headers.get('content-type')||'').includes('text/plain')&&r.body){   // স্ট্রিম: শব্দ আসতে আসতেই দেখাও
+    const rd=r.body.getReader(),dec=new TextDecoder();let text='';
+    for(;;){const {value,done}=await rd.read();if(done)break;text+=dec.decode(value,{stream:true});if(opts.onText)opts.onText({text})}
+    text+=dec.decode();if(!text.trim())throw{code:'error',detail:'empty'};
+    if(opts.onText)opts.onText({text});return{text};
+  }
   const j=await r.json();
   if(opts.onText)opts.onText({text:j.text});
   return{text:j.text};

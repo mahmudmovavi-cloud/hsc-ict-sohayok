@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="bn">
 <head>
+<meta name="theme-color" content="#0a6b50">
+<meta name="mobile-web-app-capable" content="yes">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="HSC ICT সহায়ক: বাংলায় ধাপে ধাপে সমাধান, সংখ্যা কনভার্টার, HTML ও প্রোগ্রামিং ল্যাব, MCQ কুইজ ও বিগত সালের প্রশ্ন।">
@@ -173,6 +175,45 @@ header.bar{margin-top:0;padding-top:10px}
 .ch .cb button{padding:5px 12px;font-size:14px}
 .ch .fb{margin-top:8px;font-size:14px}
 .ch pre{margin:6px 0 0;background:var(--code-bg);color:var(--code-ink);padding:8px 10px;border-radius:8px;font:13px var(--f-mono);white-space:pre-wrap;overflow-wrap:anywhere}
+
+/* mobile polish */
+html{-webkit-text-size-adjust:100%}
+button,.pill,.chip,.opt{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+@media(max-width:640px){
+  .hero{height:88px;margin-top:8px}
+  .hero-art{display:none}
+  .hero-t{max-width:100%;padding:0 14px}
+  .hero-t h1{font-size:26px}
+  .hero-t p{font-size:12.5px;margin-top:4px}
+  header.bar{padding-top:8px;padding-bottom:8px;margin-bottom:14px}
+  .tabrow{gap:8px}
+  .exam{padding:9px 14px;font-size:14px;min-height:40px}
+  nav.tabs{scroll-snap-type:x proximity}
+  nav.tabs button{scroll-snap-align:start}
+  .pill{min-height:40px}
+  .card{padding:14px;border-radius:12px}
+  h2{font-size:21px}
+  input,select,textarea,.code-in,.sql-ed,#g-code,#h-code,#s-code{font-size:16px!important}
+  .code-in{min-height:220px}
+  .sql-ed{min-height:130px}
+  .chip{min-height:38px;padding:6px 12px;font-size:14px}
+  .btn{min-height:46px}
+  .card .row .btn{flex:1 1 140px}
+  .chat-head .row{flex-wrap:nowrap;width:100%}
+  .chat-head .row .btn{flex:none;min-height:44px;padding:8px 14px}
+  #c-ch{flex:1 1 0!important;width:auto!important}
+  .sql-live{flex:1 1 100%;min-height:40px;font-size:14px}
+  .sql-live input{width:22px;height:22px}
+  .opt{padding:13px 14px}
+  .ch .cb button{min-height:40px}
+  .tbl{-webkit-overflow-scrolling:touch}
+  .answer{font-size:18px}
+  .q{font-size:18px}
+  #s-ex,#g-ex{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-right:-14px;padding-right:14px}
+  #s-ex::-webkit-scrollbar,#g-ex::-webkit-scrollbar{display:none}
+  #s-ex .chip,#g-ex .chip{flex:none;white-space:nowrap}
+}
+@media(max-width:380px){.exam{padding:9px 11px;font-size:13px}.pill{padding:6px 13px;font-size:14px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
@@ -438,6 +479,8 @@ function show(t){
   TABS.forEach(x=>$('#p-'+x).hidden=x!==t);
   $$('[data-tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));
   if(location.hash!=='#'+t)history.replaceState(null,'','#'+t);
+  const act=document.querySelector('nav.tabs .pill[data-tab="'+t+'"]');
+  if(act&&act.scrollIntoView)try{act.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'})}catch(e){}
 }
 $$('[data-tab]').forEach(b=>b.onclick=()=>show(b.dataset.tab));
 addEventListener('hashchange',()=>show(location.hash.slice(1)));

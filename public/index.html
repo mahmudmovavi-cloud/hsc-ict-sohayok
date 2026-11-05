@@ -968,7 +968,11 @@ async function webSample(input,opts={}){
   const images=[];
   for(const b of (opts.images||[]))images.push({media_type:b.type||'image/jpeg',data:await toB64(b)});
   let r;
-  try{r=await fetch('/api/ai',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({messages,images})})}catch(e){throw{code:'network'}}
+  const body=JSON.stringify({messages,images});
+  for(let k=0;k<2;k++){   // সার্ভার ব্যস্ত/টাইমআউট (502-504) হলে একবার নিজে থেকে আবার চেষ্টা
+    try{r=await fetch('/api/ai',{method:'POST',headers:{'content-type':'application/json'},body})}catch(e){if(k)throw{code:'network'};continue}
+    if(![502,503,504].includes(r.status))break;
+  }
   if(!r.ok){let d={};try{d=await r.json()}catch(e){}throw{code:r.status===429?'rate_limited':'error',detail:[r.status,d.error,d.detail].filter(Boolean).join(' · ')}}
   const j=await r.json();
   if(opts.onText)opts.onText({text:j.text});

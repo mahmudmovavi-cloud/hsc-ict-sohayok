@@ -3,7 +3,7 @@
 // মডেল বন্ধ/বদল হলে পরেরটা চেষ্টা করা হয়। Vercel-এ GEMINI_MODEL দিলে সেটাই আগে চলবে।
 const MODELS = [process.env.GEMINI_MODEL, 'gemini-3.8-flash', 'gemini-flash-latest', 'gemini-flash-lite-latest'].filter(Boolean);
 let MODEL = MODELS[0];
-const SYSTEM = 'তুমি বাংলাদেশের HSC ICT (তথ্য ও যোগাযোগ প্রযুক্তি) বিষয়ের শিক্ষক। শুধু ICT পাঠ্যক্রম (এনসিটিবি, একাদশ-দ্বাদশ) সংক্রান্ত প্রশ্নের উত্তর দাও। অন্য বিষয়ের প্রশ্নে বিনয়ের সাথে জানাও যে তুমি শুধু HSC ICT-তে সাহায্য করতে পারো। সহজ বাংলায় ধাপে ধাপে বোঝাও।';
+const SYSTEM = 'তুমি বাংলাদেশের HSC ICT (তথ্য ও যোগাযোগ প্রযুক্তি) বিষয়ের শিক্ষক। শুধু ICT পাঠ্যক্রম (এনসিটিবি, একাদশ-দ্বাদশ) সংক্রান্ত প্রশ্নের উত্তর দাও। অন্য বিষয়ের প্রশ্নে বিনয়ের সাথে জানাও যে তুমি শুধু HSC ICT-তে সাহায্য করতে পারো। সহজ বাংলায় ধাপে ধাপে বোঝাও। ভূমিকা ছাড়া সরাসরি উত্তর শুরু করো এবং উত্তর সংক্ষিপ্ত রাখো।';
 const LIMIT = 20, WINDOW_MS = 10 * 60 * 1000;   // প্রতি IP: ১০ মিনিটে ২০ অনুরোধ (সহজ সুরক্ষা)
 const hits = new Map();
 
@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
   const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown';
   if (limited(ip)) return res.status(429).json({ error: 'rate_limited' });
 
-  const { messages, images } = req.body || {};
+  const { messages, images, stream } = req.body || {};
   if (!Array.isArray(messages) || !messages.length || messages.length > 9) return res.status(400).json({ error: 'bad_messages' });
   if (messages[0].role !== 'user' || messages[messages.length - 1].role !== 'user') return res.status(400).json({ error: 'bad_order' });
   for (const m of messages) {
@@ -47,7 +47,7 @@ module.exports = async (req, res) => {
     system_instruction: { parts: [{ text: SYSTEM }] },
     contents,
     generationConfig: Object.assign(
-      { maxOutputTokens: 4096, temperature: 0.4 },
+      { maxOutputTokens: 2048, temperature: 0.3 },
       /2\.5-flash/.test(m) ? { thinkingConfig: { thinkingBudget: 0 } } : {}
     )
   });
@@ -63,8 +63,8 @@ module.exports = async (req, res) => {
         const ac = new AbortController();
         const t = setTimeout(() => ac.abort(), Math.min(left - 1000, 25000));
         try {
-          r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m)}:generateContent`, { method: 'POST', headers: { 'x-goog-api-key': process.env.GEMINI_API_KEY, 'content-type': 'application/json' }, body: mkBody(m), signal: ac.signal });
-          j = await r.json().catch(() => ({}));
+          r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m)}:${stream ? 'streamGenerateContent?alt=sse' : 'generateContent'}`, { method: 'POST', headers: { 'x-goog-api-key': process.env.GEMINI_API_KEY, 'content-type': 'application/json' }, body: mkBody(m), signal: ac.signal });
+          j = (stream && r.ok) ? {} : await r.json().catch(() => ({}));
         } catch (e) {
           r = { ok: false, status: 503 }; j = { error: { message: 'Gemini সময়মতো সাড়া দেয়নি (' + m + ')' } };
         } finally { clearTimeout(t); }
@@ -75,6 +75,33 @@ module.exports = async (req, res) => {
       if (![400, 404, 429, 500, 503].includes(r.status)) break; // মডেল বন্ধ/ব্যস্ত/কোটা শেষ হলে পরের মডেল (প্রতিটি মডেলের কোটা আলাদা), নইলে থামো
     }
     if (!r.ok) return res.status(r.status === 429 ? 429 : 502).json({ error: 'upstream', status: r.status, detail: j && j.error && j.error.message });
+    if (stream) {                              // স্ট্রিম: প্রথম শব্দ আসামাত্র ব্রাউজারে পাঠাও, পুরো উত্তরের জন্য অপেক্ষা নয়
+      const reader = r.body.getReader(), dec = new TextDecoder();
+      let buf = '', started = false;
+      const emit = t => {
+        if (!t) return;
+        if (!started) { started = true; res.status(200); res.setHeader('content-type', 'text/plain; charset=utf-8'); res.setHeader('cache-control', 'no-store'); res.setHeader('x-accel-buffering', 'no'); }
+        res.write(t);
+      };
+      const handle = line => {
+        if (!line.startsWith('data:')) return;
+        try {
+          const o = JSON.parse(line.slice(5).trim());
+          const ps = (o.candidates && o.candidates[0] && o.candidates[0].content && o.candidates[0].content.parts) || [];
+          emit(ps.map(p => p.text || '').join(''));
+        } catch (e) { /* অসম্পূর্ণ লাইন বাদ */ }
+      };
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buf += dec.decode(value, { stream: true });
+        let i;
+        while ((i = buf.indexOf('\n')) >= 0) { handle(buf.slice(0, i).trim()); buf = buf.slice(i + 1); }
+      }
+      if (buf.trim()) handle(buf.trim());
+      if (!started) return res.status(502).json({ error: 'empty_reply', detail: 'no text' });
+      return res.end();
+    }
     const cand = j.candidates && j.candidates[0];
     const text = ((cand && cand.content && cand.content.parts) || []).map(p => p.text || '').join('');
     if (!text) return res.status(502).json({ error: 'empty_reply', detail: (cand && cand.finishReason) || (j.promptFeedback && j.promptFeedback.blockReason) || 'no text' });

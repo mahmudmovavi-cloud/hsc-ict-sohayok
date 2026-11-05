@@ -54,12 +54,22 @@ module.exports = async (req, res) => {
   try {
     let r, j;
     const order = [MODEL, ...MODELS.filter(m => m !== MODEL)];
+    const deadline = Date.now() + Number(process.env.AI_BUDGET_MS || 40000);   // মোট সময়ের সীমা, যেন Vercel-এর 504 না আসে
+    outer:
     for (const m of order) {
-      for (let i = 0; i < 3; i++) {          // ব্যস্ত (503/500) থাকলে অপেক্ষা করে আবার চেষ্টা
-        r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m)}:generateContent`, { method: 'POST', headers: { 'x-goog-api-key': process.env.GEMINI_API_KEY, 'content-type': 'application/json' }, body: mkBody(m) });
-        j = await r.json().catch(() => ({}));
+      for (let i = 0; i < 2; i++) {          // ব্যস্ত (503/500) বা ধীর হলে একবার আবার চেষ্টা
+        const left = deadline - Date.now();
+        if (left < 4000) { r = r || { ok: false, status: 504 }; j = j || { error: { message: 'timeout' } }; break outer; }
+        const ac = new AbortController();
+        const t = setTimeout(() => ac.abort(), Math.min(left - 1000, 25000));
+        try {
+          r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m)}:generateContent`, { method: 'POST', headers: { 'x-goog-api-key': process.env.GEMINI_API_KEY, 'content-type': 'application/json' }, body: mkBody(m), signal: ac.signal });
+          j = await r.json().catch(() => ({}));
+        } catch (e) {
+          r = { ok: false, status: 503 }; j = { error: { message: 'Gemini সময়মতো সাড়া দেয়নি (' + m + ')' } };
+        } finally { clearTimeout(t); }
         if (r.ok || ![500, 503].includes(r.status)) break;
-        await new Promise(z => setTimeout(z, 1500 * (i + 1)));
+        await new Promise(z => setTimeout(z, 1000));
       }
       if (r.ok) { MODEL = m; break; }          // কাজ করা মডেলটি মনে রাখো
       if (![400, 404, 500, 503].includes(r.status)) break; // মডেল বন্ধ/ব্যস্ত হলে পরের মডেল, নইলে থামো

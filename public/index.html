@@ -973,7 +973,7 @@ async function webSample(input,opts={}){
     try{r=await fetch('/api/ai',{method:'POST',headers:{'content-type':'application/json'},body})}catch(e){if(k)throw{code:'network'};continue}
     if(![502,503,504].includes(r.status))break;
   }
-  if(!r.ok){let d={};try{d=await r.json()}catch(e){}throw{code:r.status===429?'rate_limited':'error',detail:[r.status,d.error,d.detail].filter(Boolean).join(' · ')}}
+  if(!r.ok){let d={};try{d=await r.json()}catch(e){}throw{code:r.status===429?'rate_limited':'error',detail:[r.status,d.error,String(d.detail||'').slice(0,180)].filter(Boolean).join(' · ')}}
   const j=await r.json();
   if(opts.onText)opts.onText({text:j.text});
   return{text:j.text};

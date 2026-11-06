@@ -215,6 +215,24 @@ button,.pill,.chip,.opt{touch-action:manipulation;-webkit-tap-highlight-color:tr
   #s-ex .chip,#g-ex .chip{flex:none;white-space:nowrap}
 }
 @media(max-width:380px){.exam{padding:9px 11px;font-size:13px}.pill{padding:6px 13px;font-size:14px}}
+
+/* export bar */
+.exp{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--ink-2)}
+.exp .chip{background:var(--surface-2);color:var(--ink);border:1px solid var(--line);min-height:34px}
+.exp .chip:disabled{opacity:.6;cursor:wait}
+.exp .xerr{color:var(--bad);flex:1 1 100%}
+#print-area{display:none}
+@media print{
+  @page{size:A4;margin:16mm}
+  body>*:not(#print-area){display:none!important}
+  html,body{background:#fff!important;background-image:none!important}
+  #print-area{display:block!important;color:#000;font-size:13pt;line-height:1.7}
+  #print-area h1{font-size:18pt;color:#0a6b50;margin:0 0 4pt}
+  #print-area .pq{font-weight:700;margin:6pt 0 12pt;padding:8pt 10pt;background:#eef6f2;border-radius:6pt}
+  #print-area h4{color:#0a6b50;margin:14pt 0 4pt;break-after:avoid}
+  #print-area pre{background:#f1f4f2;padding:8pt;border-radius:6pt;white-space:pre-wrap;overflow-wrap:anywhere;font-size:11pt;break-inside:avoid}
+  #print-area .pf{margin-top:16pt;font-size:10pt;color:#555;border-top:1px solid #ccc;padding-top:6pt}
+}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
@@ -1037,7 +1055,7 @@ async function send(text){
     if(blob){let ok=false;try{ok=!!(await sampleFn.limits()).images}catch(e){}
       if(!ok)throw{code:'noimg'};opts.images=[blob]}
     const r=await sampleFn(arr,opts);
-    bub.innerHTML=md(r.text);hist.push({role:'assistant',content:r.text});actions(col);
+    bub.innerHTML=md(r.text);hist.push({role:'assistant',content:r.text});exportBar(col,text||'ছবির প্রশ্ন',r.text);actions(col);
   }catch(e){
     hist.pop();
     const m=e&&e.code==='not_granted'?'এআই ব্যবহারের অনুমতি দেওয়া হয়নি। আবার পাঠালে অনুমতি চাইবে।':e&&e.code==='rate_limited'?'এই মুহূর্তে এই মেন্যুটি হালনাগাদজনিত কারণে রেসপন্স করছে না। বাকি মেন্যুগুলো দেখুন।':e&&e.code==='noimg'?'এই মুহূর্তে ছবি পড়া যাচ্ছে না। প্রশ্নটি লিখে পাঠাও।':'উত্তর আনা যায়নি। ইন্টারনেট দেখে আবার পাঠাও।';
@@ -1643,6 +1661,210 @@ SEL('#c-list').onclick=e=>{
 };
 renderTabs();chRender();runNow(true);
 })();
+
+
+/* ================= EXPORT (Word / PDF / PowerPoint) ================= */
+const IN_ART=!!window.claude;
+function parseBlocks(t){
+  const out=[],lines=String(t).replace(/\r/g,'').split('\n');let i=0,para=[];
+  const flush=()=>{if(para.length){out.push({t:'p',x:para.join(' ')});para=[]}};
+  while(i<lines.length){
+    const L=lines[i];
+    if(/^\s*```/.test(L)){flush();const c=[];i++;while(i<lines.length&&!/^\s*```/.test(lines[i]))c.push(lines[i++]);i++;out.push({t:'code',x:c.join('\n').replace(/\s+$/,'')});continue}
+    let m;
+    if((m=/^\s*#{1,6}\s+(.*)$/.exec(L))){flush();out.push({t:'h',x:m[1].replace(/\*\*/g,'')});i++;continue}
+    if((m=/^\s*([-*•]|\d+[.)])\s+(.*)$/.exec(L))){flush();out.push({t:'li',b:/^\d/.test(m[1])?m[1]:'•',x:m[2]});i++;continue}
+    if(!L.trim()){flush();i++;continue}
+    para.push(L.trim());i++;
+  }
+  flush();return out;
+}
+const runsOf=x=>String(x).split(/(\*\*[^*]+\*\*|`[^`]+`)/).filter(Boolean).map(s=>s.startsWith('**')?{x:s.slice(2,-2),b:1}:s.startsWith('`')?{x:s.slice(1,-1),c:1}:{x:s});
+const plain=x=>String(x).replace(/\*\*/g,'').replace(/`/g,'');
+const stamp=()=>{const d=new Date(),p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}`};
+async function saveBlob(name,blob){
+  if(window.claude){const d=await window.claude.use('downloads');if(d){await d.save({filename:name,data:blob});return}}
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.append(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000);
+}
+const _ld={};
+function loadLib(key,urls,test){
+  if(test())return Promise.resolve();
+  if(_ld[key])return _ld[key];
+  return _ld[key]=(async()=>{
+    for(const u of urls){
+      try{await new Promise((ok,no)=>{const s=document.createElement('script');s.src=u;s.onload=ok;s.onerror=no;document.head.append(s)});if(test())return}catch(e){}
+    }
+    _ld[key]=null;throw new Error('lib '+key);
+  })();
+}
+const needZip=()=>loadLib('zip',['https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js'],()=>window.JSZip);
+const needPptx=()=>loadLib('pptx',['https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js','https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js'],()=>window.PptxGenJS);
+const FOOT='AI can make mistakes. Please double check.';
+const xe=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g,'');
+
+/* ---- DOCX ---- */
+async function makeDocx(q,text){
+  await needZip();
+  const rp=(o={})=>`<w:rPr>${o.mono?'<w:rFonts w:ascii="Consolas" w:hAnsi="Consolas" w:cs="Consolas"/>':''}${o.b?'<w:b/><w:bCs/>':''}${o.i?'<w:i/><w:iCs/>':''}${o.color?`<w:color w:val="${o.color}"/>`:''}<w:sz w:val="${o.sz||24}"/><w:szCs w:val="${o.sz||24}"/></w:rPr>`;
+  const run=(x,o)=>`<w:r>${rp(o)}<w:t xml:space="preserve">${xe(x)}</w:t></w:r>`;
+  const para=(inner,o={})=>`<w:p><w:pPr>${o.keep?'<w:keepNext/>':''}${o.shade?`<w:shd w:val="clear" w:color="auto" w:fill="${o.shade}"/>`:''}<w:spacing w:before="${o.before||0}" w:after="${o.after==null?120:o.after}"${o.line?` w:line="${o.line}" w:lineRule="auto"`:''}/>${o.ind?`<w:ind w:left="${o.ind}" w:hanging="${o.hang||0}"/>`:''}</w:pPr>${inner}</w:p>`;
+  const rich=(x,base={})=>runsOf(x).map(r=>run(r.x,{...base,b:base.b||r.b,mono:r.c})).join('');
+  let body=para(run('HSC ICT সহায়ক · AI উত্তর',{b:1,sz:34,color:'0A6B50'}),{after:160});
+  body+=para(run('প্রশ্ন: ',{b:1,color:'0A6B50'})+run(plain(q),{b:1}),{shade:'EAF4EF',after:200});
+  for(const b of parseBlocks(text)){
+    if(b.t==='h')body+=para(run(b.x,{b:1,sz:28,color:'0A6B50'}),{before:240,after:80,keep:1});
+    else if(b.t==='li')body+=para(run(b.b+' ',{b:1})+rich(b.x),{ind:480,hang:300,after:80});
+    else if(b.t==='code')body+=b.x.split('\n').map(l=>para(run(l||' ',{mono:1,sz:21}),{shade:'F1F4F2',after:0})).join('')+para('',{after:80});
+    else body+=para(rich(b.x));
+  }
+  body+=para(run(FOOT,{i:1,sz:20,color:'666666'}),{before:300});
+  const NS='xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"';
+  const z=new JSZip();
+  z.file('[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>');
+  z.file('_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>');
+  z.file('word/_rels/document.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>');
+  z.file('word/styles.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles ${NS}><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:eastAsia="Calibri" w:cs="Nirmala UI"/><w:sz w:val="24"/><w:szCs w:val="24"/><w:lang w:val="en-US" w:bidi="bn-BD"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="120" w:line="300" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style></w:styles>`);
+  z.file('word/document.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document ${NS}><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>`);
+  return z.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',compression:'DEFLATE'});
+}
+
+/* ---- PPTX ---- */
+async function makePptx(q,text){
+  await needPptx();
+  const P=new PptxGenJS();P.layout='LAYOUT_16x9';P.title='HSC ICT সহায়ক';
+  const F='Nirmala UI',G='0A6B50';
+  const foot=s=>s.addText(FOOT,{x:0.6,y:5.15,w:8.8,h:0.3,fontSize:10,italic:true,color:'777777',fontFace:'Calibri'});
+  const t1=P.addSlide();t1.background={color:G};
+  t1.addText('HSC ICT সহায়ক',{x:0.6,y:1.2,w:8.8,h:1,fontSize:38,bold:true,color:'FFFFFF',fontFace:F});
+  t1.addText(plain(q).slice(0,220),{x:0.6,y:2.4,w:8.8,h:1.6,fontSize:22,color:'D5EFE5',fontFace:F,valign:'top',fit:'shrink'});
+  t1.addText(FOOT,{x:0.6,y:5.0,w:8.8,h:0.3,fontSize:11,italic:true,color:'D5EFE5',fontFace:'Calibri'});
+  const mkRuns=(x,base)=>runsOf(x).map(r=>({text:r.x,options:{...base,bold:!!r.b,fontFace:r.c?'Consolas':F}}));
+  let title='উত্তর',items=[],used=0,part=0;
+  const cap=8.5; // আনুমানিক লাইন-সীমা
+  const push=()=>{
+    if(!items.length)return;
+    const s=P.addSlide();
+    s.addShape('rect',{x:0,y:0,w:10,h:0.12,fill:{color:G},line:{color:G}});
+    s.addText(part?title+' (চলবে)':title,{x:0.6,y:0.3,w:8.8,h:0.8,fontSize:26,bold:true,color:G,fontFace:F,fit:'shrink'});
+    let y=1.25;
+    for(const it of items){
+      if(it.t==='code'){
+        const h=Math.min(3.8,0.34*it.lines+0.2);
+        s.addText(it.x,{x:0.6,y,w:8.8,h,fontSize:14,fontFace:'Consolas',color:'E6F4EE',fill:{color:'0E1F19'},valign:'top',margin:8,fit:'shrink'});y+=h+0.12;
+      }else{
+        const h=0.34*it.lines+0.1;
+        s.addText(it.runs,{x:0.6,y,w:8.8,h,fontSize:18,color:'1B2B25',valign:'top',margin:2,...(it.bullet?{bullet:it.bullet===true?true:{code:'2022'},indentLevel:0}:{})});y+=h+0.06;
+      }
+    }
+    foot(s);items=[];used=0;part++;
+  };
+  for(const b of parseBlocks(text)){
+    if(b.t==='h'){push();title=b.x.slice(0,70);part=0;continue}
+    if(b.t==='code'){
+      const ls=b.x.split('\n');
+      for(let k=0;k<ls.length;k+=9){const ch=ls.slice(k,k+9);if(used+ch.length*0.9>cap)push();items.push({t:'code',x:ch.join('\n'),lines:ch.length});used+=ch.length*0.9+0.5}
+      continue;
+    }
+    const lines=Math.max(1,Math.ceil(plain(b.x).length/62));
+    if(used+lines>cap)push();
+    items.push({t:b.t,lines,bullet:b.t==='li',runs:mkRuns((b.t==='li'&&b.b!=='•'?b.b+' ':'')+b.x,{})});used+=lines;
+  }
+  push();
+  return P.write({outputType:'blob'});
+}
+
+/* ---- PDF (ব্রাউজারের প্রিন্ট → "Save as PDF"; বাংলা অক্ষর ঠিক থাকে) ---- */
+function buildPrint(q,text){
+  let el=document.getElementById('print-area');if(el)el.remove();
+  el=document.createElement('div');el.id='print-area';
+  el.innerHTML=`<h1>HSC ICT সহায়ক · AI উত্তর</h1><div class="pq">প্রশ্ন: ${esc(plain(q))}</div><div class="md">${md(text)}</div><div class="pf">${FOOT}</div>`;
+  document.body.append(el);return el;
+}
+function makePdf(q,text){
+  buildPrint(q,text);
+  const clean=()=>{const e=document.getElementById('print-area');if(e)e.remove();removeEventListener('afterprint',clean)};
+  addEventListener('afterprint',clean);
+  setTimeout(()=>window.print(),80);
+}
+const _dl=()=>new Date().toLocaleDateString('bn-BD',{year:'numeric',month:'long',day:'numeric'});
+/* ---- PDF ফাইল (শুধু Claude-এর ভেতরে: প্রিন্ট বন্ধ, তাই ক্যানভাসে এঁকে PDF বানানো হয়) ---- */
+const _PF="'Hind Siliguri','Noto Sans Bengali','Nirmala UI','Kohinoor Bangla',system-ui,sans-serif",_PM="'JetBrains Mono',Consolas,Menlo,monospace";
+const _runs=s=>{const o=[];s=String(s).replace(/`([^`]+)`/g,'$1');let l=0,m;const re=/\*\*(.+?)\*\*/g;while((m=re.exec(s))){if(m.index>l)o.push({s:s.slice(l,m.index)});o.push({s:m[1],b:true});l=re.lastIndex}if(l<s.length)o.push({s:s.slice(l)});return o.length?o:[{s:''}]};
+const _blocks=t=>parseBlocks(t).map(b=>b.t==='code'?{t:'code',s:b.x}:b.t==='h'?{t:'h',r:_runs(b.x.replace(/\*\*/g,''))}:b.t==='li'?{t:'li',n:(b.b&&b.b!=='•')?parseInt(b.b)||0:0,r:_runs(b.x)}:{t:'p',r:_runs(b.x)});
+/* ---- PDF (text drawn on canvas -> JPEG pages -> hand-written PDF) ---- */
+async function makePdfBlob(q,text){
+  try{await document.fonts?.load("16px 'Hind Siliguri'","আবক")}catch(e){}
+  const W=794,H=1123,M=56,SC=2,cw=W-2*M;
+  const pages=[];let cv,ctx,y;
+  const newPage=()=>{cv=document.createElement('canvas');cv.width=W*SC;cv.height=H*SC;ctx=cv.getContext('2d');ctx.scale(SC,SC);ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#0b6b50';ctx.fillRect(0,0,W,8);ctx.fillStyle='#888';ctx.font=`12px ${_PF}`;ctx.textBaseline='alphabetic';ctx.fillText('HSC ICT সহায়ক · '+FOOT,M,H-28);
+    pages.push(cv);y=M};
+  const need=h=>{if(y+h>H-M)newPage()};
+  const wrap=(segs,font,width)=>{ // segs: [{s,b}] -> lines of [{s,b}]
+    const lines=[[]];let x=0;
+    segs.forEach(sg=>{ctx.font=(sg.b?'700 ':'')+font;
+      sg.s.split(/(\s+)/).forEach(w=>{if(w==='')return;const ww=ctx.measureText(w).width;
+        if(x+ww>width&&x>0&&!/^\s+$/.test(w)){lines.push([]);x=0}
+        if(x===0&&/^\s+$/.test(w))return;lines[lines.length-1].push({s:w,b:sg.b,w:ww});x+=ww})});
+    return lines};
+  const draw=(segs,{size=17,lh=1.7,x0=M,width=cw,color='#1f2d2a',bold=false,prefix=''})=>{
+    const font=`${size}px ${_PF}`;const L=wrap(segs.map(s=>({s:s.s,b:s.b||bold})),font,width-(prefix?22:0));
+    L.forEach((ln,i)=>{need(size*lh);ctx.fillStyle=color;
+      if(i===0&&prefix){ctx.font=font;ctx.fillText(prefix,x0,y+size)}
+      let x=x0+(prefix?22:0);ln.forEach(t=>{ctx.font=(t.b?'700 ':'')+font;ctx.fillText(t.s,x,y+size);x+=t.w});y+=size*lh})};
+  newPage();
+  ctx.fillStyle='#0b6b50';ctx.font=`700 30px ${_PF}`;ctx.fillText('HSC ICT সহায়ক',M,y+30);y+=44;
+  ctx.fillStyle='#777';ctx.font=`14px ${_PF}`;ctx.fillText(_dl(),M,y+14);y+=30;
+  if(q){draw([{s:'প্রশ্ন: ',b:1},{s:q}],{size:17,color:'#0b6b50'});y+=6}
+  ctx.strokeStyle='#d5e3dd';ctx.beginPath();ctx.moveTo(M,y);ctx.lineTo(W-M,y);ctx.stroke();y+=16;
+  _blocks(text).forEach(b=>{
+    if(b.t==='h'){need(60);y+=8;draw(b.r,{size:21,color:'#0b6b50',bold:true,lh:1.5});y+=2}
+    else if(b.t==='li')draw(b.r,{prefix:b.n?b.n+'.':'•',x0:M+10,width:cw-10});
+    else if(b.t==='p'){draw(b.r,{});y+=4}
+    else{const f=`14px ${_PM}`;ctx.font=f;const cl=[];b.s.split('\n').forEach(l=>{let cur='';for(const ch of l){if(ctx.measureText(cur+ch).width>cw-24){cl.push(cur);cur=''}cur+=ch}cl.push(cur)});
+      let i=0;while(i<cl.length){const fit=Math.max(1,Math.floor((H-M-y-16)/21));if(fit<3&&i<cl.length-1&&y>M+10){newPage();continue}
+        const chunk=cl.slice(i,i+fit);const h=chunk.length*21+16;ctx.fillStyle='#12231f';ctx.fillRect(M,y,cw,h);ctx.fillStyle='#d7f5e8';ctx.font=f;
+        chunk.forEach((t,k)=>ctx.fillText(t,M+12,y+24+k*21));y+=h;i+=fit;if(i<cl.length)newPage()}y+=10}
+  });
+  /* hand-written PDF with one JPEG per page */
+  const jpgs=await Promise.all(pages.map(c=>new Promise(r=>c.toBlob(b=>b.arrayBuffer().then(r),'image/jpeg',.92))));
+  const enc=new TextEncoder(),parts=[],offs=[];let len=0;
+  const put=d=>{const u=typeof d==='string'?enc.encode(d):d;parts.push(u);len+=u.length};
+  const obj=(n,fn)=>{offs[n]=len;put(`${n} 0 obj\n`);fn();put('\nendobj\n')};
+  const N=pages.length,PW=595.28,PH=841.89;put('%PDF-1.4\n');
+  obj(1,()=>put('<< /Type /Catalog /Pages 2 0 R >>'));
+  obj(2,()=>put(`<< /Type /Pages /Count ${N} /Kids [${pages.map((_,i)=>`${3+i*3} 0 R`).join(' ')}] >>`));
+  jpgs.forEach((j,i)=>{const p=3+i*3,im=p+1,ct=p+2,c=`q ${PW} 0 0 ${PH} 0 0 cm /Im0 Do Q`;
+    obj(p,()=>put(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PW} ${PH}] /Resources << /XObject << /Im0 ${im} 0 R >> >> /Contents ${ct} 0 R >>`));
+    obj(im,()=>{put(`<< /Type /XObject /Subtype /Image /Width ${W*SC} /Height ${H*SC} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${j.byteLength} >>\nstream\n`);put(new Uint8Array(j));put('\nendstream')});
+    obj(ct,()=>put(`<< /Length ${c.length} >>\nstream\n${c}\nendstream`))});
+  const total=3+N*3,xr=len;put(`xref\n0 ${total}\n0000000000 65535 f \n`);
+  for(let n=1;n<total;n++)put(String(offs[n]).padStart(10,'0')+' 00000 n \n');
+  put(`trailer\n<< /Size ${total} /Root 1 0 R >>\nstartxref\n${xr}\n%%EOF`);
+  return new Blob(parts,{type:'application/pdf'});
+}
+
+
+function exportBar(col,q,text){
+  const bar=document.createElement('div');bar.className='exp';
+  bar.innerHTML='<span>সেভ করো:</span><button class="chip" type="button" data-f="docx">Word (.docx)</button>'+'<button class="chip" type="button" data-f="pdf">PDF</button>'+'<button class="chip" type="button" data-f="pptx">PowerPoint (.pptx)</button>';
+  bar.onclick=async e=>{
+    const b=e.target.closest('[data-f]');if(!b||b.disabled)return;
+    bar.querySelectorAll('.xerr').forEach(x=>x.remove());
+    const f=b.dataset.f,old=b.textContent;
+    try{
+      if(f==='pdf'&&!IN_ART){makePdf(q,text);return}
+      b.disabled=true;b.textContent='তৈরি হচ্ছে…';
+      const blob=f==='docx'?await makeDocx(q,text):f==='pdf'?await makePdfBlob(q,text):await makePptx(q,text);
+      await saveBlob(`HSC-ICT-answer-${stamp()}.${f}`,blob);
+    }catch(err){
+      if(err&&err.code==='declined')return;
+      const m=document.createElement('div');m.className='xerr';m.textContent='ফাইল তৈরি করা যায়নি। ইন্টারনেট দেখে আবার চেষ্টা করো।';bar.append(m);
+    }finally{b.disabled=false;b.textContent=old}
+  };
+  col.append(bar);
+}
 
 /* ================= PAST PAPERS ================= */
 const YEARS=[2024,2025,2026],PKEY='ict-past-v1',LET={'ক':0,'খ':1,'গ':2,'ঘ':3,a:0,b:1,c:2,d:3,'১':0,'২':1,'৩':2,'৪':3,'1':0,'2':1,'3':2,'4':3};
